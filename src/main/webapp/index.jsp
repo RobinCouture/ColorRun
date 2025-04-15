@@ -10,5 +10,7 @@
 <a href="hello-servlet">Hello Servlet</a>
 <br/>
 <a href="index2.jsp">Hello Servlet</a>
+<br/>
+<a href="user-list">User List</a>
 </body>
 </html>

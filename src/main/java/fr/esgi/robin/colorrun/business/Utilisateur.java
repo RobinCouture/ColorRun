@@ -29,6 +29,19 @@ public class Utilisateur {
     @Column(name = "DATE_INSCRIPTION")
     private Instant dateInscription;
 
+    public Utilisateur() {
+    }
+
+    public Utilisateur(Integer id, String nom, String prenom, String email, String motDePasse, String photoProfil, Instant dateInscription) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.motDePasse = motDePasse;
+        this.photoProfil = photoProfil;
+        this.dateInscription = dateInscription;
+    }
+
     public Integer getId() {
         return id;
     }

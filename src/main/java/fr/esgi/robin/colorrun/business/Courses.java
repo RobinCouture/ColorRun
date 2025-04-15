@@ -6,7 +6,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "COURSES")
-public class Cours {
+public class Courses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_COURSE", nullable = false)

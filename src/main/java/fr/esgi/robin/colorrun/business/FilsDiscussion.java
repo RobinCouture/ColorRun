@@ -14,7 +14,7 @@ public class Filsdiscussion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_COURSE")
-    private Cours idCourse;
+    private Courses idCourse;
 
     @Lob
     @Column(name = "CONTENU", nullable = false)
@@ -31,11 +31,11 @@ public class Filsdiscussion {
         this.id = id;
     }
 
-    public Cours getIdCourse() {
+    public Courses getIdCourse() {
         return idCourse;
     }
 
-    public void setIdCourse(Cours idCourse) {
+    public void setIdCourse(Courses idCourse) {
         this.idCourse = idCourse;
     }
 
