@@ -37,6 +37,10 @@ public class Courses {
     @Column(name = "CAUSE_SOUTENUE", length = 100)
     private String causeSoutenue;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORGANISATEUR_ID")
+    private Utilisateur utilisateur;
+
     public Integer getId() {
         return id;
     }
@@ -107,6 +111,14 @@ public class Courses {
 
     public void setCauseSoutenue(String causeSoutenue) {
         this.causeSoutenue = causeSoutenue;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
 }

@@ -12,6 +12,10 @@ public class Demandesorganisateur {
     @Column(name = "ID_DEMANDE", nullable = false)
     private Integer id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_UTILISATEUR")
+    private Utilisateur utilisateur;
+
     @Lob
     @Column(name = "MOTIVATION", nullable = false)
     private String motivation;
@@ -25,6 +29,14 @@ public class Demandesorganisateur {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public String getMotivation() {

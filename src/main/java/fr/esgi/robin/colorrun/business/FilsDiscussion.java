@@ -12,9 +12,13 @@ public class Filsdiscussion {
     @Column(name = "ID_MESSAGE", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_COURSE")
-    private Courses idCourse;
+    private Courses course;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_UTILISATEUR")
+    private Utilisateur utilisateur;
 
     @Lob
     @Column(name = "CONTENU", nullable = false)
@@ -31,12 +35,20 @@ public class Filsdiscussion {
         this.id = id;
     }
 
-    public Courses getIdCourse() {
-        return idCourse;
+    public Courses getCourse() {
+        return course;
     }
 
-    public void setIdCourse(Courses idCourse) {
-        this.idCourse = idCourse;
+    public void setCourse(Courses course) {
+        this.course = course;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public String getContenu() {
