@@ -41,6 +41,22 @@ public class Courses {
     @JoinColumn(name = "ORGANISATEUR_ID")
     private Utilisateur utilisateur;
 
+    public Courses() {
+    }
+
+    public Courses(Integer id, String nomCourse, String description, Instant dateHeure, String lieu, Double distance, Double prix, Integer nbMaxParticipants, String causeSoutenue, Utilisateur utilisateur) {
+        this.id = id;
+        this.nomCourse = nomCourse;
+        this.description = description;
+        this.dateHeure = dateHeure;
+        this.lieu = lieu;
+        this.distance = distance;
+        this.prix = prix;
+        this.nbMaxParticipants = nbMaxParticipants;
+        this.causeSoutenue = causeSoutenue;
+        this.utilisateur = utilisateur;
+    }
+
     public Integer getId() {
         return id;
     }
