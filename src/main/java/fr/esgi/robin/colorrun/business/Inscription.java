@@ -29,6 +29,18 @@ public class Inscription {
     @Column(name = "DATE_INSCRIPTION")
     private Instant dateInscription;
 
+    public Inscription() {
+    }
+
+    public Inscription(Integer id, Courses course, Utilisateur utilisateur, String dossard, String qrCode, Instant dateInscription) {
+        this.id = id;
+        this.course = course;
+        this.utilisateur = utilisateur;
+        this.dossard = dossard;
+        this.qrCode = qrCode;
+        this.dateInscription = dateInscription;
+    }
+
     public Integer getId() {
         return id;
     }

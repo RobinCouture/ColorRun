@@ -27,6 +27,17 @@ public class Filsdiscussion {
     @Column(name = "DATE_ENVOI")
     private Instant dateEnvoi;
 
+    public Filsdiscussion() {
+    }
+
+    public Filsdiscussion(Integer id, Courses course, Utilisateur utilisateur, String contenu, Instant dateEnvoi) {
+        this.id = id;
+        this.course = course;
+        this.utilisateur = utilisateur;
+        this.contenu = contenu;
+        this.dateEnvoi = dateEnvoi;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -20,8 +20,22 @@ public class Demandesorganisateur {
     @Column(name = "MOTIVATION", nullable = false)
     private String motivation;
 
+    @Column(name = "STATUT", columnDefinition = "ENUM")
+    private StatutDemande statut;
+
     @Column(name = "DATE_DEMANDE")
     private Instant dateDemande;
+
+    public Demandesorganisateur() {
+    }
+
+    public Demandesorganisateur(Integer id, Utilisateur utilisateur, String motivation, StatutDemande statut, Instant dateDemande) {
+        this.id = id;
+        this.utilisateur = utilisateur;
+        this.motivation = motivation;
+        this.statut = statut;
+        this.dateDemande = dateDemande;
+    }
 
     public Integer getId() {
         return id;
@@ -55,7 +69,15 @@ public class Demandesorganisateur {
         this.dateDemande = dateDemande;
     }
 
-/*
+    public StatutDemande getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutDemande statut) {
+        this.statut = statut;
+    }
+
+    /*
  TODO [Reverse Engineering] create field to map the 'STATUT' column
  Available actions: Define target Java type | Uncomment as is | Remove column mapping
     @Column(name = "STATUT", columnDefinition = "ENUM")
