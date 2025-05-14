@@ -3,6 +3,7 @@ package fr.esgi.robin.colorrun.servlet;
 import fr.esgi.robin.colorrun.business.Utilisateur;
 import fr.esgi.robin.colorrun.repository.UtilisateurRepository;
 import fr.esgi.robin.colorrun.repository.impl.UtilisateurRepositoryImpl;
+import fr.esgi.robin.colorrun.util.PasswordUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -34,7 +35,9 @@ public class RegisterServlet extends HttpServlet {
             req.getRequestDispatcher("/register.jsp").forward(req, resp);
         }
 
-        Utilisateur newUser = new Utilisateur(null, nom, prenom, email, motDePasse, null, new Date().toInstant());
+        String hashedPassword = PasswordUtils.hashPassword(motDePasse);
+
+        Utilisateur newUser = new Utilisateur(null, nom, prenom, email, hashedPassword, null, new Date().toInstant());
         userRepository.create(newUser);
 
         resp.sendRedirect("/login");

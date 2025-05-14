@@ -3,6 +3,7 @@ package fr.esgi.robin.colorrun.servlet;
 import fr.esgi.robin.colorrun.business.Utilisateur;
 import fr.esgi.robin.colorrun.repository.UtilisateurRepository;
 import fr.esgi.robin.colorrun.repository.impl.UtilisateurRepositoryImpl;
+import fr.esgi.robin.colorrun.util.PasswordUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,7 +29,7 @@ public class LoginServlet extends HttpServlet {
 
         Utilisateur user = utilisateurRepository.findByEmail(email);
 
-        if (user != null && user.getMotDePasse().equals(motDePasse)) {
+        if (user != null && PasswordUtils.checkPassword(motDePasse, user.getMotDePasse())) {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
             resp.sendRedirect("/");
