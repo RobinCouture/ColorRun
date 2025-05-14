@@ -107,4 +107,28 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Utilisateur findByEmail(String email) {
+        String query = "SELECT * FROM UTILISATEURS WHERE EMAIL = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Utilisateur(
+                        rs.getInt("ID_UTILISATEUR"),
+                        rs.getString("NOM"),
+                        rs.getString("PRENOM"),
+                        rs.getString("EMAIL"),
+                        rs.getString("MOT_DE_PASSE"),
+                        rs.getString("PHOTO_PROFIL"),
+                        rs.getObject("DATE_INSCRIPTION", Instant.class)
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

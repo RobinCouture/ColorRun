@@ -10,4 +10,5 @@ public interface UtilisateurRepository {
     public List<Utilisateur> findAll();
     public void update(Utilisateur utilisateur);
     public void delete(Utilisateur utilisateur);
+    public Utilisateur findByEmail(String email);
 }
