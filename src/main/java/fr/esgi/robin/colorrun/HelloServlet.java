@@ -46,6 +46,13 @@ public class HelloServlet extends HttpServlet {
                 out.println("<td>" + rs.getString("MOT_DE_PASSE") + "</td>");
                 out.println("</tr>");
             }
+
+            out.println("<div class='navigation'>");
+            out.println("<a href='login'>Connexion</a>");
+            out.println("<a href='register'>Inscription</a>");
+            out.println("<a href='logout'>Deconnexion</a>");
+            out.println("<a href='users'>Liste des utilisateurs</a>");
+            out.println("</div>");
         } catch (SQLException e) {
             out.println("<h1> connexion échoué </h1>");
             out.println("<p>" + e.getMessage() + "</p>");
