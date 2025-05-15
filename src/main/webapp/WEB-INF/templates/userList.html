@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Utilisateurs</title>
+</head>
+<body>
+    <table class="table table-striped table-hover">
+        <tr th:each="utilisateur:${utilisateurs}">
+            <td th:text="${utilisateur.id}"></td>
+            <td th:text="${utilisateur.nom}"></td>
+        </tr>
+    </table>
+</body>
+</html>
