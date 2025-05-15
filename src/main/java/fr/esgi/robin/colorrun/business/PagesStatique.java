@@ -54,4 +54,8 @@ public class Pagesstatique {
         this.dateDerniereModif = dateDerniereModif;
     }
 
+    public Pagesstatique(Integer id, String titrePage) {
+        this.id = id;
+        this.titrePage = titrePage;
+    }
 }
