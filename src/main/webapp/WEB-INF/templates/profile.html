@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Mon Profil - ColorRun</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/ressources/css/style.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/profile.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+    
+    <!-- Messages d'alerte -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}">Message de succès</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${errorMessage}">Message d'erreur</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <div class="profile-container">
+            <!-- En-tête du profil -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="profile-title" th:text="${utilisateur.nomComplet}">NOM Prénom</h2>
+                <p class="profile-subtitle">Affichage / modification du profil</p>
+            </div>
+
+            <!-- Formulaire de profil -->
+            <form method="post" novalidate>
+                <!-- Nom -->
+                <div class="form-floating">
+                    <input type="text" 
+                           class="form-control" 
+                           id="nom" 
+                           name="nom" 
+                           th:value="${utilisateur.nom}"
+                           placeholder="Nom" 
+                           required>
+                    <label for="nom">Nom</label>
+                </div>
+
+                <!-- Prénom -->
+                <div class="form-floating">
+                    <input type="text" 
+                           class="form-control" 
+                           id="prenom" 
+                           name="prenom" 
+                           th:value="${utilisateur.prenom}"
+                           placeholder="Prénom" 
+                           required>
+                    <label for="prenom">Prénom</label>
+                </div>
+
+                <!-- Email -->
+                <div class="form-floating">
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email" 
+                           th:value="${utilisateur.email}"
+                           placeholder="Adresse email" 
+                           required>
+                    <label for="email">Adresse mail</label>
+                </div>
+
+                <!-- Séparateur mot de passe -->
+                <div class="password-divider">
+                    <p class="password-note">
+                        <i class="fas fa-info-circle"></i>
+                        Laissez vide pour conserver votre mot de passe actuel
+                    </p>
+                    
+                    <!-- Nouveau mot de passe -->
+                    <div class="form-floating">
+                        <input type="password" 
+                               class="form-control" 
+                               id="motDePasse" 
+                               name="motDePasse" 
+                               placeholder="Nouveau mot de passe">
+                        <label for="motDePasse">Mot de passe</label>
+                    </div>
+                </div>
+
+                <!-- Boutons -->
+                <div class="btn-group-profile">
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save me-2"></i>
+                        Enregistrer
+                    </button>
+                    <button type="button" class="btn btn-cancel" onclick="window.history.back()">
+                        <i class="fas fa-times me-2"></i>
+                        Quitter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Supprimer les messages d'alerte après 5 secondes
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 150);
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Gestion des Rôles - ColorRun</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/ressources/css/style.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/admin-roles.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+
+    <!-- Contenu principal -->
+    <div class="admin-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="admin-card">
+                        <h1 class="admin-title">
+                            <i class="fas fa-users-cog me-3"></i>
+                            Gestion des Rôles Utilisateurs
+                        </h1>
+                        
+                        <!-- Messages de succès/erreur -->
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${successMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <!-- Tableau des utilisateurs -->
+                        <div class="table-responsive">
+                            <table class="table role-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-envelope me-2"></i>Email</th>
+                                        <th><i class="fas fa-user me-2"></i>Nom Complet</th>
+                                        <th><i class="fas fa-calendar me-2"></i>Date d'inscription</th>
+                                        <th><i class="fas fa-shield-alt me-2"></i>Rôle Actuel</th>
+                                        <th><i class="fas fa-cogs me-2"></i>Modifier Rôle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="utilisateur : ${utilisateurs}">
+                                        <td th:text="${utilisateur.email}">email@example.com</td>
+                                        <td th:text="${utilisateur.nomComplet}">John Doe</td>
+                                        <td th:text="${#temporals.format(utilisateur.dateInscription, 'dd/MM/yyyy')}">01/01/2024</td>
+                                        <td>
+                                            <span th:if="${utilisateur.roleString == 'admin'}" class="admin-badge">ADMIN</span>
+                                            <span th:if="${utilisateur.roleString == 'participant'}" class="user-badge">PARTICIPANT</span>
+                                            <span th:if="${utilisateur.roleString == 'organisateur'}" class="organisateur-badge">ORGANISATEUR</span>
+                                        </td>
+                                        <td>
+                                            <form method="post" style="display: inline-flex; align-items: center; gap: 10px;">
+                                                <input type="hidden" name="action" value="updateRole">
+                                                <input type="hidden" name="userId" th:value="${utilisateur.id}">
+                                                <input type="hidden" name="currentPage" th:value="${currentPage}">
+                                                <select name="role" class="role-select">
+                                                    <option value="participant" th:selected="${utilisateur.roleString == 'participant'}">PARTICIPANT</option>
+                                                    <option value="organisateur" th:selected="${utilisateur.roleString == 'organisateur'}">ORGANISATEUR</option>
+                                                    <option value="admin" th:selected="${utilisateur.roleString == 'admin'}">ADMIN</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-update">
+                                                    <i class="fas fa-save me-1"></i>Modifier
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(utilisateurs)}">
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class="fas fa-users-slash me-2"></i>
+                                            Aucun utilisateur trouvé
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination - TOUJOURS AFFICHÉE -->
+                        <div class="pagination-container">
+                            <nav aria-label="Navigation de pagination">
+                                <ul class="pagination justify-content-center">
+                                    <!-- Bouton Précédent -->
+                                    <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/admin/roles(page=${currentPage - 1})}" 
+                                           th:if="${hasPrevious}" aria-label="Précédent">
+                                            <i class="fas fa-chevron-left"></i> Précédent
+                                        </a>
+                                        <span class="page-link" th:unless="${hasPrevious}" aria-label="Précédent">
+                                            <i class="fas fa-chevron-left"></i> Précédent
+                                        </span>
+                                    </li>
+                                    
+                                    <!-- Numéros de page -->
+                                    <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}" 
+                                        th:classappend="${pageNum == currentPage} ? 'active'">
+                                        <a class="page-link" th:href="@{/admin/roles(page=${pageNum})}" th:text="${pageNum}">1</a>
+                                    </li>
+                                    
+                                    <!-- Bouton Suivant -->
+                                    <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/admin/roles(page=${currentPage + 1})}" 
+                                           th:if="${hasNext}" aria-label="Suivant">
+                                            Suivant <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                        <span class="page-link" th:unless="${hasNext}" aria-label="Suivant">
+                                            Suivant <i class="fas fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer avec th:replace -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Supprimer les messages après 5 secondes
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 150);
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html> 

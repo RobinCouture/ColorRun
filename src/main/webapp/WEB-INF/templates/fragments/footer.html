@@ -11,13 +11,16 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
+                    <a class="navbar-brand d-flex align-items-center" th:href="@{/}" style="margin-bottom: 20px;">
+                        <img th:src="@{/ressources/images/logo.png}" alt="ColorRun" class="navbar-logo-img">
+                    </a>
                     <h4>ColorRun</h4>
                     <p>Organisateur de courses colorées en France depuis 2024.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Liens rapides</h4>
                     <ul>
-                        <li><a href="/courses">Courses</a></li>
+                        <li><a th:href="@{/courses}">Courses</a></li>
                         <li><a href="/about">À propos</a></li>
                         <li><a href="/contact">Contact</a></li>
                         <li><a href="/faq">FAQ</a></li>

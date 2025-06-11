@@ -84,3 +84,6 @@ VALUES
 (1, 'ColorRun Paris', 'Une course colorée au cœur de la capitale française. Venez vivre une expérience unique dans les rues de Paris avec des milliers de participants !', '2024-06-15 10:00:00', 'Paris, France', 5.0, 25.0, 500, 'Soutien aux enfants malades', 1),
 (2, 'ColorRun Lyon', 'Découvrez la ville des lumières sous un nouveau jour avec notre course colorée à travers Lyon. Un parcours magique vous attend !', '2024-07-20 09:30:00', 'Lyon, France', 3.5, 20.0, 300, 'Protection de l''environnement', 1),
 (3, 'ColorRun Marseille', 'Course au bord de la Méditerranée avec une vue imprenable sur la mer. Courez dans un cadre idyllique !', '2024-08-10 08:00:00', 'Marseille, France', 7.0, 30.0, 400, 'Aide aux personnes âgées', 1);
+
+INSERT INTO Utilisateurs (nom, prenom, email, mot_de_passe, role, date_inscription)
+VALUES ('Test', 'Admin', 'test@admin.com', 'admin123', 'admin', CURRENT_TIMESTAMP);

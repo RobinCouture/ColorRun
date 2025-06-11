@@ -29,14 +29,39 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String motDePasse = req.getParameter("motDePasse");
 
+        System.out.println("🔐 Tentative de connexion pour: " + email); // DEBUG
+
         Utilisateur user = utilisateurRepository.findByEmail(email);
 
-        if (user != null && PasswordUtils.checkPassword(motDePasse, user.getMotDePasse())) {
-            HttpSession session = req.getSession();
-            session.setAttribute("user", user);
-            resp.sendRedirect(req.getContextPath() + "/hello-servlet");
+        if (user != null) {
+            System.out.println("👤 Utilisateur trouvé: " + user.getNomComplet()); // DEBUG
+            System.out.println("🔑 Mot de passe en base: " + user.getMotDePasse()); // DEBUG
+            
+            // Vérifier le mot de passe (texte brut ou BCrypt)
+            boolean passwordValid = false;
+            
+            // Si le mot de passe en base commence par $2a$ c'est du BCrypt
+            if (user.getMotDePasse().startsWith("$2a$")) {
+                passwordValid = PasswordUtils.checkPassword(motDePasse, user.getMotDePasse());
+                System.out.println("🔒 Vérification BCrypt: " + passwordValid); // DEBUG
+            } else {
+                // Sinon comparaison directe (pour les tests)
+                passwordValid = motDePasse.equals(user.getMotDePasse());
+                System.out.println("🔓 Vérification texte brut: " + passwordValid); // DEBUG
+            }
+            
+            if (passwordValid) {
+                HttpSession session = req.getSession();
+                session.setAttribute("utilisateur", user); // CORRECTION: "utilisateur" au lieu de "user"
+                System.out.println("✅ Connexion réussie pour: " + user.getNomComplet()); // DEBUG
+                resp.sendRedirect(req.getContextPath() + "/");
+                return;
+            }
         } else {
-            TemplateUtil.processTemplate("login", req, resp, Map.of("errorMessage", "Email ou mot de passe incorrect"));
+            System.out.println("❌ Utilisateur non trouvé pour email: " + email); // DEBUG
         }
+        
+        System.out.println("❌ Échec de connexion"); // DEBUG
+        TemplateUtil.processTemplate("login", req, resp, Map.of("errorMessage", "Email ou mot de passe incorrect"));
     }
 }

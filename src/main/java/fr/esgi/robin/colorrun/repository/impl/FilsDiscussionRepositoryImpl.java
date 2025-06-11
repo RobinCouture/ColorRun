@@ -1,98 +1,112 @@
 package fr.esgi.robin.colorrun.repository.impl;
 
-import fr.esgi.robin.colorrun.business.Filsdiscussion;
+import fr.esgi.robin.colorrun.business.Courses;
+import fr.esgi.robin.colorrun.business.FilsDiscussion;
+import fr.esgi.robin.colorrun.business.Utilisateur;
 import fr.esgi.robin.colorrun.database.DatabaseConfig;
 import fr.esgi.robin.colorrun.repository.FilsDiscussionRepository;
 
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Statement;
 
 public class FilsDiscussionRepositoryImpl implements FilsDiscussionRepository {
-    @Override
-    public void create(Filsdiscussion filsDiscussion) {
-        String query = "INSERT INTO FILSDISCUSSION (ID_MESSAGE, ID_COURSE, ID_UTILISATEUR, CONTENU, DATE_ENVOI) VALUES (?, ?, ?, ?, ?)";
-        try (var connection = DatabaseConfig.getConnection();
-             var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, filsDiscussion.getId());
-            preparedStatement.setObject(2, filsDiscussion.getCourse());
-            preparedStatement.setObject(3, filsDiscussion.getUtilisateur());
-            preparedStatement.setString(4, filsDiscussion.getContenu());
-            preparedStatement.setObject(5, filsDiscussion.getDateEnvoi());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
-    public Filsdiscussion findById(Integer id) {
-        String query = "SELECT * FROM FILSDISCUSSION WHERE ID_MESSAGE = ?";
-        try (var connection = DatabaseConfig.getConnection();
-             var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
-            var resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return new Filsdiscussion(
-                    resultSet.getInt("ID_MESSAGE"),
-                    resultSet.getObject("ID_COURSE", fr.esgi.robin.colorrun.business.Courses.class),
-                    resultSet.getObject("ID_UTILISATEUR", fr.esgi.robin.colorrun.business.Utilisateur.class),
-                    resultSet.getString("CONTENU"),
-                    resultSet.getObject("DATE_ENVOI", java.time.Instant.class)
-                );
+    public List<FilsDiscussion> findByCourseId(Integer courseId) {
+        List<FilsDiscussion> messages = new ArrayList<>();
+        String query = """
+            SELECT f.ID_MESSAGE, f.CONTENU, f.DATE_ENVOI,
+                   u.ID_UTILISATEUR, u.NOM, u.PRENOM, u.EMAIL, u.ROLE,
+                   c.ID_COURSE, c.NOM_COURSE
+            FROM FILSDISCUSSION f
+            JOIN UTILISATEURS u ON f.ID_UTILISATEUR = u.ID_UTILISATEUR
+            JOIN COURSES c ON f.ID_COURSE = c.ID_COURSE
+            WHERE f.ID_COURSE = ?
+            ORDER BY f.DATE_ENVOI ASC
+        """;
+
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            var stmt = conn.prepareStatement(query);
+            stmt.setInt(1, courseId);
+            var rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Créer l'utilisateur
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(rs.getInt("ID_UTILISATEUR"));
+                utilisateur.setNom(rs.getString("NOM"));
+                utilisateur.setPrenom(rs.getString("PRENOM"));
+                utilisateur.setEmail(rs.getString("EMAIL"));
+                utilisateur.setRoleString(rs.getString("ROLE"));
+
+                // Créer la course
+                Courses course = new Courses();
+                course.setId(rs.getInt("ID_COURSE"));
+                course.setNomCourse(rs.getString("NOM_COURSE"));
+
+                // Créer le message
+                FilsDiscussion filsDiscussion = new FilsDiscussion();
+                filsDiscussion.setIdMessage(rs.getInt("ID_MESSAGE"));
+                filsDiscussion.setContenu(rs.getString("CONTENU"));
+                filsDiscussion.setDateEnvoi(rs.getTimestamp("DATE_ENVOI").toInstant());
+                filsDiscussion.setUtilisateur(utilisateur);
+                filsDiscussion.setCourse(course);
+
+                messages.add(filsDiscussion);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la récupération des messages: " + e.getMessage());
             e.printStackTrace();
         }
-        return null;
+
+        return messages;
     }
 
     @Override
-    public List<Filsdiscussion> findAll() {
-        List<Filsdiscussion> filsDiscussions = new ArrayList<>();
-        String query = "SELECT * FROM FILSDISCUSSION";
-        try (var connection = DatabaseConfig.getConnection();
-             var preparedStatement = connection.prepareStatement(query)) {
-            var resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                filsDiscussions.add(new Filsdiscussion(
-                    resultSet.getInt("ID_MESSAGE"),
-                    resultSet.getObject("ID_COURSE", fr.esgi.robin.colorrun.business.Courses.class),
-                    resultSet.getObject("ID_UTILISATEUR", fr.esgi.robin.colorrun.business.Utilisateur.class),
-                    resultSet.getString("CONTENU"),
-                    resultSet.getObject("DATE_ENVOI", java.time.Instant.class)
-                ));
+    public FilsDiscussion save(FilsDiscussion filsDiscussion) {
+        String query = "INSERT INTO FILSDISCUSSION (CONTENU, DATE_ENVOI, ID_UTILISATEUR, ID_COURSE) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            var stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, filsDiscussion.getContenu());
+            stmt.setTimestamp(2, Timestamp.from(filsDiscussion.getDateEnvoi()));
+            stmt.setInt(3, filsDiscussion.getUtilisateur().getId());
+            stmt.setInt(4, filsDiscussion.getCourse().getId());
+            
+            stmt.executeUpdate();
+            
+            var rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                filsDiscussion.setIdMessage(rs.getInt(1));
             }
-        } catch (SQLException e) {
+            
+            System.out.println("✅ Message sauvegardé avec succès: " + filsDiscussion.getIdMessage());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la sauvegarde du message: " + e.getMessage());
             e.printStackTrace();
         }
-        return filsDiscussions;
+        
+        return filsDiscussion;
     }
 
     @Override
-    public void update(Filsdiscussion filsDiscussion) {
-        String query = "UPDATE FILSDISCUSSION SET ID_COURSE = ?, ID_UTILISATEUR = ?, CONTENU = ?, DATE_ENVOI = ? WHERE ID_MESSAGE = ?";
-        try (var connection = DatabaseConfig.getConnection();
-             var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setObject(1, filsDiscussion.getCourse());
-            preparedStatement.setObject(2, filsDiscussion.getUtilisateur());
-            preparedStatement.setString(3, filsDiscussion.getContenu());
-            preparedStatement.setObject(4, filsDiscussion.getDateEnvoi());
-            preparedStatement.setInt(5, filsDiscussion.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void delete(Filsdiscussion filsDiscussion) {
+    public void deleteById(Integer id) {
         String query = "DELETE FROM FILSDISCUSSION WHERE ID_MESSAGE = ?";
-        try (var connection = DatabaseConfig.getConnection();
-             var preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, filsDiscussion.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
+        
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            var stmt = conn.prepareStatement(query);
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                System.out.println("✅ Message supprimé avec succès: " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la suppression du message: " + e.getMessage());
             e.printStackTrace();
         }
     }

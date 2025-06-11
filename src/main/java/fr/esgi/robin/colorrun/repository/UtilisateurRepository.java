@@ -11,4 +11,8 @@ public interface UtilisateurRepository {
     public void update(Utilisateur utilisateur);
     public void delete(Utilisateur utilisateur);
     public Utilisateur findByEmail(String email);
+    
+    // Méthodes pour la pagination
+    public List<Utilisateur> findAllPaginated(int offset, int limit);
+    public int countAll();
 }

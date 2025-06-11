@@ -1,0 +1,194 @@
+/* ========================================
+   PAGE PROFIL - STYLES
+   ======================================== */
+
+.profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.profile-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.profile-subtitle {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   FORMULAIRE STYLES
+   ======================================== */
+
+.form-floating {
+    margin-bottom: 20px;
+}
+
+.form-floating > .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-floating > label {
+    color: #666;
+}
+
+/* ========================================
+   SECTION MOT DE PASSE
+   ======================================== */
+
+.password-divider {
+    border-top: 1px solid #e9ecef;
+    margin: 30px 0 20px;
+    padding-top: 20px;
+}
+
+.password-note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.password-note i {
+    margin-right: 8px;
+}
+
+/* ========================================
+   BOUTONS
+   ======================================== */
+
+.btn-group-profile {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: 500;
+    flex: 1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: 500;
+    flex: 1;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    background: #5a6268;
+    color: white;
+}
+
+/* ========================================
+   MESSAGES D'ALERTE
+   ======================================== */
+
+.alert {
+    margin: 20px auto;
+    max-width: 600px;
+    border-radius: 10px;
+    border: none;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f1c2c7 100%);
+    color: #721c24;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .btn-group-profile {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .profile-title {
+        font-size: 1.5rem;
+    }
+    
+    .profile-subtitle {
+        font-size: 0.8rem;
+    }
+} 

@@ -1,0 +1,310 @@
+/* ========================================
+   PAGE ADMIN GESTION DES RÔLES - STYLES
+   ======================================== */
+
+.admin-container {
+    min-height: calc(100vh - 200px);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 50px 0;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 30px;
+}
+
+.admin-title {
+    color: #2c3e50;
+    font-family: 'Fredoka', cursive;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ========================================
+   TABLEAU DES RÔLES
+   ======================================== */
+
+.role-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.role-table th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+    padding: 15px;
+    border: none;
+}
+
+.role-table td {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.role-table tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+/* ========================================
+   FORMULAIRES ET SÉLECTEURS
+   ======================================== */
+
+.role-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.role-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+.btn-update {
+    background: #667eea;
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+    background: #5a67d8;
+}
+
+.btn-update:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   BADGES DE RÔLES
+   ======================================== */
+
+.admin-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.user-badge {
+    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.organisateur-badge {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+/* ========================================
+   PAGINATION
+   ======================================== */
+
+.pagination-container {
+    margin-top: 30px;
+}
+
+.pagination .page-link {
+    border: 2px solid #e9ecef;
+    color: #667eea;
+    padding: 8px 16px;
+    margin: 0 2px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.pagination .page-link:hover {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+    font-weight: 600;
+    transform: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+.pagination .page-item.disabled .page-link:hover {
+    transform: none;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #6c757d;
+}
+
+.pagination-info {
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+/* ========================================
+   MESSAGES D'ALERTE
+   ======================================== */
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f1c2c7 100%);
+    color: #721c24;
+}
+
+.alert .btn-close {
+    filter: invert(1);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 20px 0;
+    }
+    
+    .admin-card {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .admin-title {
+        font-size: 1.5rem;
+    }
+    
+    .role-table th,
+    .role-table td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+    
+    .role-select {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .btn-update {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .pagination .page-link {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 12px;
+    }
+    
+    .admin-title {
+        font-size: 1.25rem;
+    }
+    
+    .role-table th,
+    .role-table td {
+        padding: 8px 5px;
+    }
+    
+    .admin-badge,
+    .user-badge,
+    .organisateur-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+    
+    .pagination .page-link {
+        padding: 5px 8px;
+        font-size: 12px;
+        margin: 0 1px;
+    }
+}
+
+/* ========================================
+   ANIMATIONS ET EFFETS
+   ======================================== */
+
+.admin-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.role-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.role-table tbody tr:hover {
+    transform: translateX(2px);
+}
+
+/* Focus states pour l'accessibilité */
+.role-select:focus,
+.btn-update:focus,
+.pagination .page-link:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+} 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="'ColorRun - ' + ${course.nomCourse}">ColorRun - Détails de la course</title>
+    <title th:text="${pageTitle}">ColorRun - Détails de la course</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,10 +16,11 @@
     <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/pages/course-details.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
 </head>
 <body>
     <!-- Navigation -->
-    <div th:replace="fragments/navigation :: navigation"></div>
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
     
     <!-- Page Header -->
     <section class="course-detail-header">
@@ -30,6 +31,21 @@
             </div>
         </div>
     </section>
+
+    <!-- Messages de succès/erreur -->
+    <div class="container mt-3">
+        <div th:if="${session.successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${session.successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${session.errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${session.errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
 
     <!-- Course Details Content -->
     <section class="course-detail-content">
@@ -80,23 +96,23 @@
                         
                         <!-- Obstacles ou non -->
                         <div class="course-obstacles-section">
-                            <h3>Obstacles ou non</h3>
-                            <p>Cette course ne comporte pas d'obstacles particuliers, c'est une course de plaisir accessible à tous.</p>
+                            <h3>Obstacles</h3>
+                            <p>Cette course ne comporte pas d'obstacles particuliers, c'est une course de plaisir accessible à tous les niveaux.</p>
                         </div>
                         
                         <!-- Cause soutenue -->
-                        <div class="course-cause-section">
-                            <h3>Cause soutenue</h3>
-                            <p>Cette course soutient l'association "Courir pour la planète" qui œuvre pour la protection de l'environnement.</p>
+                        <div class="course-cause-section" th:if="${course.causeSoutenue}">
+                            <h3><i class="fas fa-heart me-2"></i>Cause soutenue</h3>
+                            <p th:text="${course.causeSoutenue}">Soutien aux enfants malades</p>
                         </div>
                         
-                        <!-- Lieu (map google) -->
+                        <!-- Lieu -->
                         <div class="course-location-section">
-                            <h3>Lieu</h3>
+                            <h3><i class="fas fa-map-marker-alt me-2"></i>Lieu</h3>
                             <div class="location-map">
                                 <div class="map-placeholder">
                                     <i class="fas fa-map-marked-alt"></i>
-                                    <span>Lieu (map google)</span>
+                                    <span th:text="'Carte : ' + ${course.lieu}">Carte : Paris, France</span>
                                 </div>
                             </div>
                         </div>
@@ -108,57 +124,77 @@
                     <div class="course-sidebar">
                         <!-- Fil de discussion -->
                         <div class="discussion-section">
-                            <h3>Fil de discussion <span class="visibility-note">(visible uniquement par les users connectés)</span></h3>
+                            <h3>
+                                <i class="fas fa-comments me-2"></i>
+                                Discussion de la course
+                            </h3>
                             
-                            <div class="discussion-messages">
-                                <div class="discussion-message">
-                                    <div class="message-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="message-content">
-                                        <strong>Discussion</strong>
-                                        <p>Message d'exemple dans le fil de discussion...</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="discussion-message">
-                                    <div class="message-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="message-content">
-                                        <strong>Discussion</strong>
-                                        <p>Autre message d'exemple...</p>
+                            <!-- Messages -->
+                            <div class="discussion-messages" id="messagesContainer">
+                                <!-- Message quand pas connecté -->
+                                <div th:unless="${peutEnvoyerMessage}" class="login-required-message">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Connexion requise</strong><br>
+                                        <a th:href="@{/login}" class="text-decoration-none">Connectez-vous</a> 
+                                        pour participer à la discussion
                                     </div>
                                 </div>
                                 
-                                <div class="discussion-message">
-                                    <div class="message-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="message-content">
-                                        <strong>Discussion</strong>
-                                        <p>Encore un message...</p>
-                                    </div>
-                                </div>
+                                <!-- Messages existants -->
+                                <div th:if="${#lists.isEmpty(filsDiscussion)}" class="no-messages">
+                                  <p class="text-muted text-center">
+                                      <i class="fas fa-comment-slash me-2"></i>
+                                      Aucun message pour le moment.<br>
+                                      Soyez le premier à discuter de cette course !
+                                  </p>
+                              </div>
+                              
+                              <div th:each="message : ${filsDiscussion}" class="discussion-message">
+                                  <div class="message-avatar">
+                                      <i class="fas fa-user"></i>
+                                  </div>
+                                  <div class="message-content">
+                                      <div class="message-header">
+                                          <strong th:text="${message.utilisateur.nomComplet}">Nom Utilisateur</strong>
+                                          <small class="text-muted" th:text="${#temporals.format(message.dateEnvoi, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</small>
+                                      </div>
+                                      <p th:text="${message.contenu}">Contenu du message...</p>
+                                  </div>
+                              </div>
                             </div>
                             
-                            <!-- Input pour nouveau message -->
-                            <div class="message-input-section">
-                                <div class="message-input">
-                                    <input type="text" placeholder="Tapez votre message..." class="form-control">
-                                    <button class="send-btn">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
+                            <!-- Input pour nouveau message (si connecté) -->
+                            <div th:if="${peutEnvoyerMessage}" class="message-input-section">
+                                <form method="post" class="message-form">
+                                    <input type="hidden" name="action" value="sendMessage">
+                                    <div class="message-input">
+                                        <input type="text" 
+                                               name="message" 
+                                               placeholder="Tapez votre message..." 
+                                               class="form-control"
+                                               required
+                                               maxlength="500">
+                                        <button type="submit" class="send-btn">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         
                         <!-- Bouton d'inscription -->
                         <div class="registration-section">
-                            <button class="register-btn">
+                            <button class="register-btn" onclick="alert('Fonctionnalité d\'inscription à venir !')">
                                 <i class="fas fa-running"></i>
                                 S'inscrire à cette course
                             </button>
+                            <p class="registration-info">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    Inscription jusqu'au <span th:text="${#temporals.format(course.dateHeure, 'dd/MM/yyyy')}">15/06/2024</span>
+                                </small>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -167,9 +203,45 @@
     </section>
 
     <!-- Footer -->
-    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-scroll vers le bas des messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Supprimer les messages d'alerte après 5 secondes
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    if (alert.classList.contains('show')) {
+                        alert.classList.remove('show');
+                        setTimeout(function() {
+                            alert.remove();
+                        }, 150);
+                    }
+                });
+            }, 5000);
+        });
+        
+        // Soumission du formulaire avec Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.querySelector('input[name="message"]');
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.closest('form').submit();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
