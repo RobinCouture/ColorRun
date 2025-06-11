@@ -13,7 +13,7 @@ import java.io.IOException;
  * Il redirige vers la page de connexion si l'utilisateur n'est pas connecté.
  * Les pages concernées sont celles mises dans urlPatterns.
  */
-@WebFilter(urlPatterns = {"/accueil", "/profil", "/courses/*", "/users"})
+@WebFilter(urlPatterns = {"/accueil", "/profil", "/users"})
 public class AuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

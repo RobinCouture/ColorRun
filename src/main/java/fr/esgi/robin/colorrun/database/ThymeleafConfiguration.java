@@ -15,6 +15,7 @@ public class ThymeleafConfiguration implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         application = JakartaServletWebApplication.buildApplication(sce.getServletContext());
+        sce.getServletContext().setAttribute("thymeleaf.application", application);
 
         TemplateEngine templateEngine = new TemplateEngine();
 

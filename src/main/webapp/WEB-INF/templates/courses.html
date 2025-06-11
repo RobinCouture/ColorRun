@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorRun - Toutes les courses</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS cohérent -->
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/courses.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="fragments/navigation :: navigation"></div>
+    
+    <!-- Page Header -->
+    <section class="courses-header">
+        <div class="container">
+            <h1 class="courses-title">COURSES</h1>
+            <p class="courses-subtitle">Découvrez toutes nos courses colorées à travers la France</p>
+        </div>
+    </section>
+
+    <!-- Search Filters -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-bar">
+                <form method="get" class="search-form">
+                    <div class="search-input">
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" name="date" placeholder="Date" class="filter-input" th:value="${searchDate}">
+                    </div>
+                    <div class="search-input">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" name="ville" placeholder="Ville" class="filter-input" th:value="${searchVille}">
+                    </div>
+                    <div class="search-input">
+                        <i class="fas fa-route"></i>
+                        <select name="distance" class="filter-input">
+                            <option value="">Distance</option>
+                            <option value="3" th:selected="${searchDistance == '3'}">3 km</option>
+                            <option value="5" th:selected="${searchDistance == '5'}">5 km</option>
+                            <option value="7" th:selected="${searchDistance == '7'}">7 km</option>
+                            <option value="10" th:selected="${searchDistance == '10'}">10 km+</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Grid -->
+    <section class="courses-grid-section">
+        <div class="container">
+            <div class="courses-grid">
+                <div th:each="course : ${courses}" class="course-item">
+                    <!-- Image de la map (côté gauche) -->
+                    <div class="course-map">
+                        <div class="map-placeholder">
+                            <i class="fas fa-map"></i>
+                            <span>Tracé de la course</span>
+                        </div>
+                        <!-- TODO: Remplacer par une vraie carte avec le tracé -->
+                    </div>
+                    
+                    <!-- Informations de la course (côté droit) -->
+                    <div class="course-info">
+                        <div class="course-header">
+                            <h3 class="course-name" th:text="${course.nomCourse}">ColorRun Paris</h3>
+                            <span class="course-date" th:text="${#temporals.format(course.dateHeure, 'dd MMMM yyyy')}">15 juin 2024</span>
+                        </div>
+                        
+                        <div class="course-details">
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${course.lieu}">Paris, France</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-route"></i>
+                                <span th:text="${course.distance} + ' km'">5 km</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-euro-sign"></i>
+                                <span th:text="${course.prix} + ' €'">25 €</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-users"></i>
+                                <span th:text="${course.nbMaxParticipants} + ' participants max'">500 participants max</span>
+                            </div>
+                        </div>
+                        
+                        <p class="course-description" th:text="${course.description}">
+                            Information importante de la course. Venez découvrir cette expérience unique...
+                        </p>
+                        
+                        <a th:href="@{'/course/' + ${course.id}}" class="course-btn">En savoir plus</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Load More Button -->
+            <div class="load-more-section">
+                <button class="load-more-btn">Voir plus de courses</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">PARTICIPEZ À LA PROCHAINE AVENTURE COLORÉE PRÈS DE CHEZ VOUS !</h2>
+        </div>
+    </section>
+
+    <!-- Avis des coureurs -->
+    <section class="reviews-section">
+        <div class="container">
+            <h2 class="reviews-title">AVIS DES COUREURS</h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="reviewer-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="review-content">
+                        <h4>Nom User</h4>
+                        <p>"Une Ambiance Incroyable, J'ai Adoré Me Faire Asperger De Rose!"</p>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="reviewer-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="review-content">
+                        <h4>Nom User</h4>
+                        <p>"Une Ambiance Incroyable, J'ai Adoré Me Faire Asperger De Rose!"</p>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="reviewer-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="review-content">
+                        <h4>Nom User</h4>
+                        <p>"Une Ambiance Incroyable, J'ai Adoré Me Faire Asperger De Rose!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Load More Script -->
+    <script>
+        document.querySelector('.load-more-btn').addEventListener('click', function() {
+            // TODO: Implémenter le chargement de plus de courses
+            alert('Fonctionnalité à implémenter');
+        });
+    </script>
+</body>
+</html>

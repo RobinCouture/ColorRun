@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorRun</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
+</head>
+<body>
+<!-- Navigation -->
+<div th:replace="fragments/navigation :: navigation"></div>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Vivez l'expérience ColorRun</h1>
+        <p class="hero-subtitle">Participez à nos courses colorées uniques à travers la France et vivez des moments
+            inoubliables en famille ou entre amis.</p>
+        <a th:href="@{/courses}" class="hero-cta">Découvrir les courses</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Pourquoi choisir ColorRun ?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-running feature-icon"></i>
+                <h3 class="feature-title">Pour tous les niveaux</h3>
+                <p class="feature-description">Que vous soyez débutant ou coureur confirmé, nos courses sont adaptées à
+                    tous les niveaux.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-users feature-icon"></i>
+                <h3 class="feature-title">Esprit festif</h3>
+                <p class="feature-description">Une ambiance unique et colorée pour partager des moments de joie en
+                    groupe.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-map-marked-alt feature-icon"></i>
+                <h3 class="feature-title">Parcours variés</h3>
+                <p class="feature-description">Des parcours urbains ou nature, soigneusement sélectionnés pour votre
+                    plaisir.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section class="upcoming-events">
+    <div class="container">
+        <h2 class="section-title">Prochaines courses</h2>
+
+        <!-- Si des courses existent -->
+        <div th:if="${upcomingCourses != null and !upcomingCourses.isEmpty()}" class="events-grid">
+            <div th:each="course : ${upcomingCourses}" class="event-card">
+                <div class="event-content">
+                    <span class="event-date" th:text="${#temporals.format(course.dateHeure, 'dd MMMM yyyy')}">15 Juin 2024</span>
+                    <h3 class="event-title" th:text="${course.nomCourse}">ColorRun Paris</h3>
+                    <p class="event-description" th:text="${course.description}">Une course colorée au cœur de la
+                        capitale.</p>
+
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span th:text="${course.lieu}">Paris, France</span>
+                    </div>
+
+                    <div class="event-footer">
+                        <a th:href="@{'/course/' + ${course.id}}" class="event-button">En savoir plus</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Si aucune course -->
+        <div th:if="${upcomingCourses == null or upcomingCourses.isEmpty()}" class="no-events">
+            <i class="fas fa-calendar-times"></i>
+            <h3>Aucune course programmée</h3>
+            <p>De nouvelles courses colorées arrivent bientôt !</p>
+            <a th:href="@{/courses}" class="btn">Être notifié</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

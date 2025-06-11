@@ -7,6 +7,7 @@ import fr.esgi.robin.colorrun.repository.CoursesRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,24 +36,36 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public Courses findById(Integer id) {
         String query = "SELECT * FROM COURSES WHERE ID_COURSE = ?";
         try (Connection conn = DatabaseConfig.getConnection()) {
+            System.out.println("🔍 Recherche de la course avec ID: " + id); // DEBUG
+
             var stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
             var rs = stmt.executeQuery();
+
             if (rs.next()) {
+                System.out.println("✅ Course trouvée: " + rs.getString("NOM_COURSE")); // DEBUG
+
+                // Conversion sécurisée de la date
+                java.sql.Timestamp timestamp = rs.getTimestamp("DATE_HEURE");
+                Instant dateHeure = timestamp != null ? timestamp.toInstant() : Instant.now();
+
                 return new Courses(
-                    rs.getInt("ID_COURSE"),
-                    rs.getString("NOM_COURSE"),
-                    rs.getString("DESCRIPTION"),
-                    rs.getObject("DATE_HEURE", java.time.Instant.class),
-                    rs.getString("LIEU"),
-                    rs.getDouble("DISTANCE"),
-                    rs.getDouble("PRIX"),
-                    rs.getInt("NB_MAX_PARTICIPANTS"),
-                    rs.getString("CAUSE_SOUTENUE"),
-                    rs.getObject("ORGANISATEUR_ID", fr.esgi.robin.colorrun.business.Utilisateur.class)
+                        rs.getInt("ID_COURSE"),
+                        rs.getString("NOM_COURSE"),
+                        rs.getString("DESCRIPTION"),
+                        dateHeure,
+                        rs.getString("LIEU"),
+                        rs.getDouble("DISTANCE"),
+                        rs.getDouble("PRIX"),
+                        rs.getInt("NB_MAX_PARTICIPANTS"),
+                        rs.getString("CAUSE_SOUTENUE"),
+                        null // On ignore l'organisateur pour l'instant
                 );
+            } else {
+                System.out.println("❌ Aucune course trouvée avec l'ID: " + id); // DEBUG
             }
         } catch (SQLException e) {
+            System.out.println("❌ Erreur SQL dans findById: " + e.getMessage()); // DEBUG
             e.printStackTrace();
         }
         return null;
@@ -63,26 +76,51 @@ public class CoursesRepositoryImpl implements CoursesRepository {
         List<Courses> courses = new ArrayList<>();
         String query = "SELECT * FROM COURSES";
         try (Connection conn = DatabaseConfig.getConnection()) {
+            System.out.println("🔍 Tentative de connexion à la base..."); // DEBUG
             var stmt = conn.prepareStatement(query);
             var rs = stmt.executeQuery();
-            if (rs.next()) {
-                courses.add(new Courses(
-                    rs.getInt("ID_COURSE"),
-                    rs.getString("NOM_COURSE"),
-                    rs.getString("DESCRIPTION"),
-                    rs.getObject("DATE_HEURE", java.time.Instant.class),
-                    rs.getString("LIEU"),
-                    rs.getDouble("DISTANCE"),
-                    rs.getDouble("PRIX"),
-                    rs.getInt("NB_MAX_PARTICIPANTS"),
-                    rs.getString("CAUSE_SOUTENUE"),
-                    rs.getObject("ORGANISATEUR_ID", fr.esgi.robin.colorrun.business.Utilisateur.class)
-                ));
+
+            int count = 0;
+            while (rs.next()) {
+                count++;
+                System.out.println("📋 Course trouvée #" + count + ": " + rs.getString("NOM_COURSE")); // DEBUG
+
+                try {
+                    // Conversion sécurisée de la date
+                    java.sql.Timestamp timestamp = rs.getTimestamp("DATE_HEURE");
+                    Instant dateHeure = timestamp != null ? timestamp.toInstant() : Instant.now();
+
+                    // Récupération sécurisée de l'organisateur (peut être null)
+                    Integer organisateurId = rs.getObject("ORGANISATEUR_ID", Integer.class);
+
+                    Courses course = new Courses(
+                            rs.getInt("ID_COURSE"),
+                            rs.getString("NOM_COURSE"),
+                            rs.getString("DESCRIPTION"),
+                            dateHeure,
+                            rs.getString("LIEU"),
+                            rs.getDouble("DISTANCE"),
+                            rs.getDouble("PRIX"),
+                            rs.getInt("NB_MAX_PARTICIPANTS"),
+                            rs.getString("CAUSE_SOUTENUE"),
+                            null // On ignore l'organisateur pour l'instant
+                    );
+
+                    courses.add(course);
+                    System.out.println("✅ Course ajoutée: " + course.getNomCourse()); // DEBUG
+
+                } catch (Exception e) {
+                    System.out.println("❌ Erreur lors de la création de la course #" + count + ": " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
+
+            System.out.println("📊 Total courses récupérées: " + courses.size()); // DEBUG
+
         } catch (SQLException e) {
+            System.out.println("❌ Erreur SQL: " + e.getMessage()); // DEBUG
             e.printStackTrace();
         }
-
         return courses;
     }
 
