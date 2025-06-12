@@ -183,6 +183,8 @@ public class EditCourseServlet extends HttpServlet {
         
         // Les admins peuvent tout faire
         if (utilisateur.isAdmin()) return true;
+
+        if (utilisateur.isOrganisateur()) return true;
         
         // Les organisateurs peuvent gérer leurs propres courses
         if (course.getUtilisateur() != null && 

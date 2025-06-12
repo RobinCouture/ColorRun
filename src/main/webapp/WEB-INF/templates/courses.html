@@ -17,26 +17,25 @@
     <link rel="stylesheet" th:href="@{/ressources/css/pages/courses.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/floating-messages.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
 </head>
 <body>
     <!-- Navigation -->
     <div th:replace="~{fragments/navigation :: navigation}"></div>
 
-    <!-- Messages -->
-    <div th:if="${session.successMessage}" class="container mt-4">
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
+    <!-- Messages flottants -->
+    <div class="floating-messages">
+        <div th:if="${session.successMessage}" class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+            <i class="fas fa-check-circle"></i>
             <span th:text="${session.successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
-    
-    <div th:if="${session.errorMessage}" class="container mt-4">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>
+        
+        <div th:if="${session.errorMessage}" class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
             <span th:text="${session.errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
 
@@ -252,6 +251,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/ressources/js/floating-messages.js}"></script>
     
     <!-- JavaScript pour les filtres -->
     <script>

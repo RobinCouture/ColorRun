@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Gestion des Demandes Organisateur - Admin</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS personnalisé -->
+    <link th:href="@{/ressources/css/pages/admin-demandes.css}" rel="stylesheet">
+    <link th:href="@{/ressources/css/components/navigation.css}" rel="stylesheet">
+    <link th:href="@{/ressources/css/layouts/footer.css}" rel="stylesheet">
+    <link th:href="@{/ressources/css/components/floating-messages.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+</head>
+<body class="admin-demandes">
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+
+    <!-- Messages flottants -->
+    <div id="floating-messages" class="floating-messages">
+        <div th:if="${session.successMessage}" class="alert alert-success alert-dismissible fade show auto-dismiss" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${session.successMessage}"></span>
+            <button type="button" class="btn-close" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${session.errorMessage}" class="alert alert-danger alert-dismissible fade show auto-dismiss" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${session.errorMessage}"></span>
+            <button type="button" class="btn-close" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="container">
+            <h1 class="admin-title">
+                <i class="fas fa-users-cog me-3"></i>
+                GESTION DES DEMANDES ORGANISATEUR
+            </h1>
+            <p class="admin-subtitle">Gérez les demandes de promotion en organisateur</p>
+        </div>
+    </div>
+
+    <main class="admin-main">
+        <div class="container">
+            <!-- Statistiques -->
+            <div class="row mb-5">
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card pending">
+                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).EN_ATTENTE) : 0}">0</div>
+                        <div class="stats-label">En attente</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card accepted">
+                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).ACCEPTE) : 0}">0</div>
+                        <div class="stats-label">Acceptées</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card rejected">
+                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).REFUSE) : 0}">0</div>
+                        <div class="stats-label">Refusées</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des demandes -->
+            <div class="admin-content">
+                <div th:if="${demandes == null || #lists.isEmpty(demandes)}" class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Aucune demande</h3>
+                    <p>Il n'y a actuellement aucune demande d'organisateur à traiter.</p>
+                </div>
+
+                <div th:each="demande : ${demandes}" class="demande-card">
+                    <div class="demande-header">
+                        <div>
+                            <div class="demande-user" th:text="${demande.utilisateur != null ? demande.utilisateur.nomComplet : 'Utilisateur inconnu'}">Nom Utilisateur</div>
+                            <div class="demande-date" th:text="${#temporals.format(demande.dateDemande, 'dd/MM/yyyy à HH:mm')}">01/01/2024</div>
+                        </div>
+                        <div>
+                            <span class="statut-badge" 
+                                  th:classappend="${demande.statut.name() == 'EN_ATTENTE'} ? 'statut-en-attente' : (${demande.statut.name() == 'ACCEPTE'} ? 'statut-accepte' : 'statut-refuse')"
+                                  th:text="${demande.statut.name() == 'EN_ATTENTE'} ? 'En attente' : (${demande.statut.name() == 'ACCEPTE'} ? 'Acceptée' : 'Refusée')">
+                                Statut
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="motivation-text">
+                        <strong><i class="fas fa-heart me-2"></i>Motivation :</strong>
+                        <span th:text="${demande.motivation}">Motivation de l'utilisateur...</span>
+                    </div>
+                    
+                    <!-- BOUTONS CARRÉS ROUGE/VERT pour demandes en attente -->
+                    <div class="action-buttons" th:if="${demande.statut.name() == 'EN_ATTENTE'}">
+                        <!-- BOUTON VERT ACCEPTER (change le rôle) -->
+                        <form method="post" style="display: inline;" onsubmit="return confirm('Accepter cette demande et promouvoir cet utilisateur en organisateur ?')">
+                            <input type="hidden" name="action" value="accepter">
+                            <input type="hidden" name="demandeId" th:value="${demande.id}">
+                            <button type="submit" class="btn-square btn-accept" title="Accepter et promouvoir en organisateur">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </form>
+                        
+                        <!-- BOUTON ROUGE REFUSER (ne change pas le rôle) -->
+                        <form method="post" style="display: inline;" onsubmit="return confirm('Refuser cette demande ?')">
+                            <input type="hidden" name="action" value="refuser">
+                            <input type="hidden" name="demandeId" th:value="${demande.id}">
+                            <button type="submit" class="btn-square btn-reject" title="Refuser la demande">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Bouton supprimer pour demandes traitées -->
+                    <div class="action-buttons" th:unless="${demande.statut.name() == 'EN_ATTENTE'}">
+                        <form method="post" style="display: inline;" onsubmit="return confirm('Supprimer définitivement cette demande ?')">
+                            <input type="hidden" name="action" value="supprimer">
+                            <input type="hidden" name="demandeId" th:value="${demande.id}">
+                            <button type="submit" class="btn-square btn-delete" title="Supprimer la demande">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/ressources/js/floating-messages.js}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== PAGE ADMIN DEMANDES CHARGÉE ===');
+            
+            // Nettoyage automatique des messages de session
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.auto-dismiss');
+                alerts.forEach(alert => {
+                    if (alert && alert.parentNode) {
+                        alert.remove();
+                    }
+                });
+            }, 5000);
+            
+            // Animation d'apparition des cartes
+            const demandeCards = document.querySelectorAll('.demande-card');
+            demandeCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease-out';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html> 
