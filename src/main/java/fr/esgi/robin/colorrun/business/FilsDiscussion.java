@@ -3,6 +3,7 @@ package fr.esgi.robin.colorrun.business;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "FILSDISCUSSION")
@@ -36,6 +37,9 @@ public class FilsDiscussion {
         this.utilisateur = utilisateur;
         this.contenu = contenu;
         this.dateEnvoi = dateEnvoi;
+    }
+
+    public FilsDiscussion(Integer id, String content, Date date, Utilisateur user, Courses courses) {
     }
 
     public Integer getId() {
