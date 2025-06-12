@@ -8,3 +8,13 @@ Syntax error in SQL statement " \000a INSERT INTO Courses (nom_course, descripti
  ('ColorRun Lyon', 'Découvrez la ville des lumières sous un nouveau jour avec notre course colorée à travers Lyon. Un parcours magique vous attend !', '2024-07-20 09:30:00', 'Lyon, France', 3.5, 20.0, 300, 'Protection de l''environnement', 1),
  ('ColorRun Marseille', 'Course au bord de la Méditerranée avec une vue imprenable sur la mer. Courez dans un cadre idyllique !', '2024-08-10 08:00:00', 'Marseille, France', 7.0, 30.0, 400, 'Aide aux personnes âgées', 1),
  [42001-224]
+2025-06-12 12:17:57.446591+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL " \000a ALTER TABLE Courses [*]AUTO_INCREMENT = 10"; attendu "., ADD, SET, RENAME, DROP, ALTER"
+Syntax error in SQL statement " \000a ALTER TABLE Courses [*]AUTO_INCREMENT = 10"; expected "., ADD, SET, RENAME, DROP, ALTER"; SQL statement:
+ 
+ ALTER TABLE Courses AUTO_INCREMENT = 10 [42001-224]
+2025-06-12 12:18:19.209842+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL " \000a ALTER TABLE Courses [*]AUTO_INCREMENT = 10"; attendu "., ADD, SET, RENAME, DROP, ALTER"
+Syntax error in SQL statement " \000a ALTER TABLE Courses [*]AUTO_INCREMENT = 10"; expected "., ADD, SET, RENAME, DROP, ALTER"; SQL statement:
+ 
+ ALTER TABLE Courses AUTO_INCREMENT = 10 [42001-224]

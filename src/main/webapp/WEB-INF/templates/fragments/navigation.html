@@ -10,7 +10,7 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
+            
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- NAVIGATION À GAUCHE -->
             <ul class="navbar-nav me-auto">
@@ -22,6 +22,13 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/contact}">Contact</a>
+                </li>
+                
+                <!-- LIEN CRÉER COURSE VISIBLE POUR ADMINS ET ORGANISATEURS -->
+                <li class="nav-item" th:if="${session.utilisateur != null and (session.utilisateur.roleString == 'admin' or session.utilisateur.roleString == 'organisateur')}">
+                    <a class="nav-link text-success" th:href="@{/create-course}">
+                        <i class="fas fa-plus-circle me-1"></i>Créer Course
+                    </a>
                 </li>
                 
                 <!-- LIEN ADMIN VISIBLE SEULEMENT SI ADMIN CONNECTÉ -->

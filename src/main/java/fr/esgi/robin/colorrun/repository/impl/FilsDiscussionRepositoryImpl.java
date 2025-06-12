@@ -50,7 +50,7 @@ public class FilsDiscussionRepositoryImpl implements FilsDiscussionRepository {
 
                 // Créer le message
                 FilsDiscussion filsDiscussion = new FilsDiscussion();
-                filsDiscussion.setIdMessage(rs.getInt("ID_MESSAGE"));
+                filsDiscussion.setId(rs.getInt("ID_MESSAGE"));
                 filsDiscussion.setContenu(rs.getString("CONTENU"));
                 filsDiscussion.setDateEnvoi(rs.getTimestamp("DATE_ENVOI").toInstant());
                 filsDiscussion.setUtilisateur(utilisateur);
@@ -81,10 +81,10 @@ public class FilsDiscussionRepositoryImpl implements FilsDiscussionRepository {
             
             var rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                filsDiscussion.setIdMessage(rs.getInt(1));
+                filsDiscussion.setId(rs.getInt(1));
             }
             
-            System.out.println("✅ Message sauvegardé avec succès: " + filsDiscussion.getIdMessage());
+            System.out.println("✅ Message sauvegardé avec succès: " + filsDiscussion.getId());
         } catch (Exception e) {
             System.err.println("Erreur lors de la sauvegarde du message: " + e.getMessage());
             e.printStackTrace();

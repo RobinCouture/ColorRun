@@ -30,7 +30,7 @@
 
     <servlet-mapping>
         <servlet-name>H2Console</servlet-name>
-        <url-pattern>/h2-console/*</url-pattern>
+        <url-pattern>/h2-db/*</url-pattern>
     </servlet-mapping>
 
     <!-- Configuration pour servir les ressources statiques -->

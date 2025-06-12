@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Modifier la course - ColorRun</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS cohérent -->
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/edit-course.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+    
+    <div class="edit-course-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-edit me-2"></i>Modifier la course</h1>
+                <p>Modifiez les informations de votre course ColorRun</p>
+            </div>
+            
+            <!-- Messages de succès/erreur -->
+            <div th:if="${session.successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${session.successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${session.errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${session.errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- Formulaire de modification -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="edit-form-card">
+                        <form method="post" id="editCourseForm">
+                            <div class="row">
+                                <!-- Nom de la course -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nomCourse" class="form-label">
+                                            <i class="fas fa-flag me-1"></i>Nom de la course
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="nomCourse" 
+                                               name="nomCourse" 
+                                               th:value="${course.nomCourse}"
+                                               placeholder="Ex: ColorRun Paris 2024"
+                                               required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lieu -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lieu" class="form-label">
+                                            <i class="fas fa-map-marker-alt me-1"></i>Lieu
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="lieu" 
+                                               name="lieu" 
+                                               th:value="${course.lieu}"
+                                               placeholder="Ex: Paris, France"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="form-group">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-align-left me-1"></i>Description
+                                </label>
+                                <textarea class="form-control" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="4" 
+                                          placeholder="Décrivez votre course..."
+                                          required th:text="${course.description}"></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Date et heure -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="dateHeure" class="form-label">
+                                            <i class="fas fa-calendar me-1"></i>Date et heure
+                                        </label>
+                                        <input type="datetime-local" 
+                                               class="form-control" 
+                                               id="dateHeure" 
+                                               name="dateHeure" 
+                                               th:value="${dateTimeFormatted}"
+                                               required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Distance -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="distance" class="form-label">
+                                            <i class="fas fa-route me-1"></i>Distance (km)
+                                        </label>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="distance" 
+                                               name="distance" 
+                                               step="0.1" 
+                                               min="0.1"
+                                               th:value="${course.distance}"
+                                               placeholder="Ex: 5.0"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Prix -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="prix" class="form-label">
+                                            <i class="fas fa-euro-sign me-1"></i>Prix (€)
+                                        </label>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="prix" 
+                                               name="prix" 
+                                               step="0.01" 
+                                               min="0"
+                                               th:value="${course.prix}"
+                                               placeholder="Ex: 25.00"
+                                               required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Nombre max de participants -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nbMaxParticipants" class="form-label">
+                                            <i class="fas fa-users me-1"></i>Participants max
+                                        </label>
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="nbMaxParticipants" 
+                                               name="nbMaxParticipants" 
+                                               min="1"
+                                               th:value="${course.nbMaxParticipants}"
+                                               placeholder="Ex: 500"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cause soutenue -->
+                            <div class="form-group">
+                                <label for="causeSoutenue" class="form-label">
+                                    <i class="fas fa-heart me-1"></i>Cause soutenue (optionnel)
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="causeSoutenue" 
+                                       name="causeSoutenue" 
+                                       th:value="${course.causeSoutenue}"
+                                       placeholder="Ex: Soutien aux enfants malades">
+                            </div>
+                            
+                            <!-- URL de l'image -->
+                            <div class="form-group">
+                                <label for="imageUrl" class="form-label">
+                                    <i class="fas fa-image me-1"></i>URL de l'image (optionnel)
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="imageUrl" 
+                                       name="imageUrl" 
+                                       th:value="${course.imageUrl}"
+                                       placeholder="https://exemple.com/image.jpg">
+                                <small class="form-text text-muted">
+                                    Laissez vide pour utiliser l'image par défaut
+                                </small>
+                            </div>
+                            
+                            <!-- Boutons -->
+                            <div class="button-container">
+                                <a th:href="@{/course/{id}(id=${course.id})}" class="btn btn-cancel me-3">
+                                    <i class="fas fa-times me-1"></i>Annuler
+                                </a>
+                                <button type="submit" class="btn btn-save" id="submitBtn">
+                                    <i class="fas fa-save me-1"></i>Sauvegarder les modifications
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Amélioration UX pour le formulaire
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editCourseForm');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Animation de loading lors de la soumission
+            form.addEventListener('submit', function() {
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+            
+            // Validation en temps réel
+            const requiredInputs = form.querySelectorAll('input[required], textarea[required]');
+            requiredInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim() === '') {
+                        this.classList.add('is-invalid');
+                    } else {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    }
+                });
+                
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid') && this.value.trim() !== '') {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

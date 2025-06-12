@@ -33,7 +33,6 @@ public class CourseDetailsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Traitement de l'envoi de message
         HttpSession session = req.getSession();
         Utilisateur utilisateurConnecte = (Utilisateur) session.getAttribute("utilisateur");
         
@@ -43,43 +42,110 @@ public class CourseDetailsServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
+        
         if ("sendMessage".equals(action)) {
-            try {
-                String pathInfo = req.getPathInfo();
-                Integer courseId = Integer.parseInt(pathInfo.substring(1));
-                String contenu = req.getParameter("message");
-                
-                if (contenu != null && !contenu.trim().isEmpty()) {
-                    // Récupérer la course
-                    Courses course = coursesRepository.findById(courseId);
-                    
-                    if (course != null) {
-                        // Créer le message
-                        FilsDiscussion filsDiscussion = new FilsDiscussion();
-                        filsDiscussion.setContenu(contenu.trim());
-                        filsDiscussion.setDateEnvoi(Instant.now());
-                        filsDiscussion.setUtilisateur(utilisateurConnecte);
-                        filsDiscussion.setCourse(course);
-                        
-                        // Sauvegarder le message
-                        filsDiscussionRepository.save(filsDiscussion);
-                        
-                        session.setAttribute("successMessage", "Message envoyé avec succès !");
-                    } else {
-                        session.setAttribute("errorMessage", "Course non trouvée");
-                    }
-                } else {
-                    session.setAttribute("errorMessage", "Le message ne peut pas être vide");
-                }
-            } catch (Exception e) {
-                System.err.println("Erreur lors de l'envoi du message: " + e.getMessage());
-                session.setAttribute("errorMessage", "Erreur lors de l'envoi du message");
-                e.printStackTrace();
-            }
+            handleSendMessage(req, resp, utilisateurConnecte);
+        } else if ("deleteCourse".equals(action)) {
+            handleDeleteCourse(req, resp, utilisateurConnecte);
         }
         
         // Redirection pour éviter la resoumission
         resp.sendRedirect(req.getRequestURI());
+    }
+    
+    private void handleSendMessage(HttpServletRequest req, HttpServletResponse resp, Utilisateur utilisateurConnecte) {
+        HttpSession session = req.getSession();
+        try {
+            String pathInfo = req.getPathInfo();
+            Integer courseId = Integer.parseInt(pathInfo.substring(1));
+            String contenu = req.getParameter("message");
+            
+            if (contenu != null && !contenu.trim().isEmpty()) {
+                Courses course = coursesRepository.findById(courseId);
+                
+                if (course != null) {
+                    FilsDiscussion filsDiscussion = new FilsDiscussion();
+                    filsDiscussion.setContenu(contenu.trim());
+                    filsDiscussion.setDateEnvoi(Instant.now());
+                    filsDiscussion.setUtilisateur(utilisateurConnecte);
+                    filsDiscussion.setCourse(course);
+                    
+                    filsDiscussionRepository.save(filsDiscussion);
+                    session.setAttribute("successMessage", "Message envoyé avec succès !");
+                } else {
+                    session.setAttribute("errorMessage", "Course non trouvée");
+                }
+            } else {
+                session.setAttribute("errorMessage", "Le message ne peut pas être vide");
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'envoi du message: " + e.getMessage());
+            session.setAttribute("errorMessage", "Erreur lors de l'envoi du message");
+            e.printStackTrace();
+        }
+    }
+    
+    private void handleDeleteCourse(HttpServletRequest req, HttpServletResponse resp, Utilisateur utilisateurConnecte) throws IOException {
+        HttpSession session = req.getSession();
+        try {
+            String pathInfo = req.getPathInfo();
+            Integer courseId = Integer.parseInt(pathInfo.substring(1));
+            
+            Courses course = coursesRepository.findById(courseId);
+            
+            if (course == null) {
+                session.setAttribute("errorMessage", "Course non trouvée");
+                return;
+            }
+            
+            // Vérifier les permissions
+            if (!canManageCourse(utilisateurConnecte, course)) {
+                session.setAttribute("errorMessage", "Vous n'avez pas l'autorisation de supprimer cette course");
+                return;
+            }
+            
+            // Supprimer d'abord tous les messages associés
+            List<FilsDiscussion> messages = filsDiscussionRepository.findByCourseId(courseId);
+            for (FilsDiscussion message : messages) {
+                filsDiscussionRepository.deleteById(message.getId());
+            }
+            
+            // Supprimer la course
+            coursesRepository.delete(course);
+            
+            session.setAttribute("successMessage", "Course '" + course.getNomCourse() + "' supprimée avec succès");
+            
+            // Rediriger vers la page des courses
+            resp.sendRedirect(req.getContextPath() + "/courses");
+            return;
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la suppression de la course: " + e.getMessage());
+            session.setAttribute("errorMessage", "Erreur lors de la suppression de la course");
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Vérifie si un utilisateur peut gérer une course (modifier/supprimer)
+     * CORRIGÉ : Les admins ET organisateurs peuvent gérer TOUTES les courses
+     */
+    private boolean canManageCourse(Utilisateur utilisateur, Courses course) {
+        if (utilisateur == null) return false;
+        
+        // Les admins peuvent tout faire
+        if (utilisateur.isAdmin()) return true;
+        
+        // Les organisateurs peuvent gérer TOUTES les courses (pas seulement les leurs)
+        if ("organisateur".equals(utilisateur.getRoleString())) return true;
+        
+        // Les utilisateurs normaux peuvent gérer seulement leurs propres courses
+        if (course.getUtilisateur() != null && 
+            course.getUtilisateur().getId().equals(utilisateur.getId())) {
+            return true;
+        }
+        
+        return false;
     }
 
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -120,26 +186,20 @@ public class CourseDetailsServlet extends HttpServlet {
             List<FilsDiscussion> filsDiscussion = filsDiscussionRepository.findByCourseId(courseId);
             System.out.println("📨 Nombre de messages trouvés: " + filsDiscussion.size());
             
-            // Debug: afficher les messages trouvés
-            for (FilsDiscussion message : filsDiscussion) {
-                System.out.println("  - Message ID: " + message.getIdMessage() + 
-                                 ", Contenu: " + message.getContenu() + 
-                                 ", Auteur: " + (message.getUtilisateur() != null ? message.getUtilisateur().getNomComplet() : "null"));
-            }
-            
-            // Debug: vérifier la variable passée au template
-            System.out.println("🔍 Variable filsDiscussion passée au template: " + filsDiscussion);
-            
-            // Vérifier si l'utilisateur est connecté pour le chat
+            // Vérifier si l'utilisateur est connecté
             HttpSession session = req.getSession();
             Utilisateur utilisateurConnecte = (Utilisateur) session.getAttribute("utilisateur");
             boolean peutEnvoyerMessage = utilisateurConnecte != null;
+            
+            // Vérifier si l'utilisateur peut gérer cette course
+            boolean peutGererCourse = canManageCourse(utilisateurConnecte, course);
             
             // Préparer les données pour le template
             Map<String, Object> data = new HashMap<>();
             data.put("course", course);
             data.put("filsDiscussion", filsDiscussion);
             data.put("peutEnvoyerMessage", peutEnvoyerMessage);
+            data.put("peutGererCourse", peutGererCourse);
             data.put("pageTitle", course.getNomCourse() + " - ColorRun");
             
             TemplateUtil.processTemplate("course-details", req, resp, data);

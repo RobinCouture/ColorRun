@@ -12,7 +12,10 @@ class CoursesTest {
     void constructorShouldInitializeAllFieldsCorrectly() {
         Utilisateur utilisateur = new Utilisateur();
         Instant now = Instant.now();
-        Courses course = new Courses(1, "Marathon", "A long race", now, "Paris", 42.195, 50.0, 100, "Charity", utilisateur);
+        String imageUrl = "https://example.com/image.jpg";
+        
+        // Utilisation du nouveau constructeur avec imageUrl
+        Courses course = new Courses(1, "Marathon", "A long race", now, "Paris", 42.195, 50.0, 100, "Charity", imageUrl, utilisateur);
 
         assertEquals(1, course.getId());
         assertEquals("Marathon", course.getNomCourse());
@@ -23,6 +26,7 @@ class CoursesTest {
         assertEquals(50.0, course.getPrix());
         assertEquals(100, course.getNbMaxParticipants());
         assertEquals("Charity", course.getCauseSoutenue());
+        assertEquals(imageUrl, course.getImageUrl());
         assertEquals(utilisateur, course.getUtilisateur());
     }
 
@@ -31,6 +35,7 @@ class CoursesTest {
         Courses course = new Courses();
         Utilisateur utilisateur = new Utilisateur();
         Instant now = Instant.now();
+        String imageUrl = "https://example.com/another-image.jpg";
 
         course.setId(2);
         course.setNomCourse("Sprint");
@@ -41,6 +46,7 @@ class CoursesTest {
         course.setPrix(20.0);
         course.setNbMaxParticipants(50);
         course.setCauseSoutenue("Education");
+        course.setImageUrl(imageUrl);
         course.setUtilisateur(utilisateur);
 
         assertEquals(2, course.getId());
@@ -52,12 +58,13 @@ class CoursesTest {
         assertEquals(20.0, course.getPrix());
         assertEquals(50, course.getNbMaxParticipants());
         assertEquals("Education", course.getCauseSoutenue());
+        assertEquals(imageUrl, course.getImageUrl());
         assertEquals(utilisateur, course.getUtilisateur());
     }
 
     @Test
     void constructorShouldHandleNullValues() {
-        Courses course = new Courses(null, null, null, null, null, null, null, null, null, null);
+        Courses course = new Courses(null, null, null, null, null, null, null, null, null, null, null);
 
         assertNull(course.getId());
         assertNull(course.getNomCourse());
@@ -68,6 +75,22 @@ class CoursesTest {
         assertNull(course.getPrix());
         assertNull(course.getNbMaxParticipants());
         assertNull(course.getCauseSoutenue());
+        assertNull(course.getImageUrl());
         assertNull(course.getUtilisateur());
+    }
+
+    @Test
+    void imageUrlShouldBeHandledCorrectly() {
+        Courses course = new Courses();
+        String imageUrl = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b";
+        
+        course.setImageUrl(imageUrl);
+        assertEquals(imageUrl, course.getImageUrl());
+        
+        course.setImageUrl(null);
+        assertNull(course.getImageUrl());
+        
+        course.setImageUrl("");
+        assertEquals("", course.getImageUrl());
     }
 }

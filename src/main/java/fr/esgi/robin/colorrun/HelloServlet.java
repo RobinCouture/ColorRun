@@ -20,6 +20,7 @@ import java.util.Map;
 public class HelloServlet extends HttpServlet {
 
     private CoursesRepository coursesRepository;
+    private static final int MAX_COURSES_HOME = 3; // Limite pour la page d'accueil
 
     @Override
     public void init() throws ServletException {
@@ -33,12 +34,13 @@ public class HelloServlet extends HttpServlet {
         try {
             System.out.println("🚀 HelloServlet démarré"); // DEBUG
             
-            List<Courses> upcomingCourses = coursesRepository.findAll();
+            // Récupérer seulement les 3 premières courses pour la page d'accueil
+            List<Courses> upcomingCourses = coursesRepository.findAllPaginated(0, MAX_COURSES_HOME);
             if (upcomingCourses == null) {
                 upcomingCourses = new ArrayList<>();
             }
 
-            System.out.println("📈 Nombre de courses récupérées dans le servlet: " + upcomingCourses.size()); // DEBUG
+            System.out.println("📈 Nombre de courses récupérées pour la page d'accueil: " + upcomingCourses.size()); // DEBUG
             
             // Affichage des courses pour debug
             for (Courses course : upcomingCourses) {
@@ -48,7 +50,7 @@ public class HelloServlet extends HttpServlet {
             Map<String, Object> model = new HashMap<>();
             model.put("upcomingCourses", upcomingCourses);
 
-            System.out.println("🎨 Rendu du template avec " + upcomingCourses.size() + " courses"); // DEBUG
+            System.out.println("🎨 Rendu du template home avec " + upcomingCourses.size() + " courses"); // DEBUG
             
             TemplateUtil.processTemplate("home", request, response, model);
         } catch (Exception e) {

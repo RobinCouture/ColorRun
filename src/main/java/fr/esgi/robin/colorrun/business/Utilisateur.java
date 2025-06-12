@@ -123,6 +123,14 @@ public class Utilisateur {
         return "admin".equalsIgnoreCase(this.roleString);
     }
 
+    public boolean isOrganisateur() {
+        return "organisateur".equalsIgnoreCase(this.roleString);
+    }
+
+    public boolean canCreateCourse() {
+        return isAdmin() || isOrganisateur();
+    }
+
     public String getNomComplet() {
         return this.prenom + " " + this.nom;
     }

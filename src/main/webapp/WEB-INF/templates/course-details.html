@@ -11,12 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <!-- CSS cohérent -->
     <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/pages/course-details.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
     <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
 </head>
 <body>
     <!-- Navigation -->
@@ -56,7 +59,17 @@
                     <div class="course-main-info">
                         <!-- Image de la course -->
                         <div class="course-image-section">
-                            <div class="course-image-placeholder">
+                            <div class="course-image-container" th:if="${course.imageUrl != null and !course.imageUrl.isEmpty()}">
+                                <img th:src="${course.imageUrl}" 
+                                     th:alt="${course.nomCourse}" 
+                                     class="course-image"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="course-image-placeholder" style="display: none;">
+                                    <i class="fas fa-image"></i>
+                                    <span>Image non disponible</span>
+                                </div>
+                            </div>
+                            <div class="course-image-placeholder" th:if="${course.imageUrl == null or course.imageUrl.isEmpty()}">
                                 <i class="fas fa-image"></i>
                                 <span>Image Course</span>
                             </div>
@@ -94,26 +107,29 @@
                             </p>
                         </div>
                         
-                        <!-- Obstacles ou non -->
-                        <div class="course-obstacles-section">
-                            <h3>Obstacles</h3>
-                            <p>Cette course ne comporte pas d'obstacles particuliers, c'est une course de plaisir accessible à tous les niveaux.</p>
-                        </div>
-                        
                         <!-- Cause soutenue -->
-                        <div class="course-cause-section" th:if="${course.causeSoutenue}">
+                        <div class="course-cause-section" th:if="${course.causeSoutenue != null and !course.causeSoutenue.isEmpty()}">
                             <h3><i class="fas fa-heart me-2"></i>Cause soutenue</h3>
                             <p th:text="${course.causeSoutenue}">Soutien aux enfants malades</p>
                         </div>
                         
-                        <!-- Lieu -->
+                        <!-- Lieu avec OpenStreetMap -->
                         <div class="course-location-section">
-                            <h3><i class="fas fa-map-marker-alt me-2"></i>Lieu</h3>
+                            <h3><i class="fas fa-map-marker-alt me-2"></i>Lieu de la course</h3>
                             <div class="location-map">
-                                <div class="map-placeholder">
-                                    <i class="fas fa-map-marked-alt"></i>
-                                    <span th:text="'Carte : ' + ${course.lieu}">Carte : Paris, France</span>
+                                <div id="courseMap" class="leaflet-map-container" th:data-location="${course.lieu}">
+                                    <div class="map-loading">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Chargement de la carte...</span>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="location-info">
+                                <p><strong>Adresse :</strong> <span th:text="${course.lieu}">Paris, France</span></p>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Cliquez sur le marker pour plus d'informations
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -122,32 +138,15 @@
                 <!-- Sidebar droite -->
                 <div class="col-lg-4">
                     <div class="course-sidebar">
-                        <!-- Fil de discussion -->
+                        <!-- Fils de discussion -->
                         <div class="discussion-section">
-                            <h3>
-                                <i class="fas fa-comments me-2"></i>
-                                Discussion de la course
-                            </h3>
+                            <h3><i class="fas fa-comments me-2"></i>Discussion</h3>
                             
-                            <!-- Messages -->
-                            <div class="discussion-messages" id="messagesContainer">
-                                <!-- Message quand pas connecté -->
-                                <div th:unless="${peutEnvoyerMessage}" class="login-required-message">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        <strong>Connexion requise</strong><br>
-                                        <a th:href="@{/login}" class="text-decoration-none">Connectez-vous</a> 
-                                        pour participer à la discussion
-                                    </div>
-                                </div>
-                                
-                                <!-- Messages existants -->
-                                <div th:if="${#lists.isEmpty(filsDiscussion)}" class="no-messages">
-                                  <p class="text-muted text-center">
-                                      <i class="fas fa-comment-slash me-2"></i>
-                                      Aucun message pour le moment.<br>
-                                      Soyez le premier à discuter de cette course !
-                                  </p>
+                            <!-- Messages existants -->
+                            <div class="discussion-messages">
+                              <div th:if="${filsDiscussion.isEmpty()}" class="no-messages">
+                                  <i class="fas fa-comment-slash"></i>
+                                  <p>Aucun message pour le moment.<br>Soyez le premier à commenter !</p>
                               </div>
                               
                               <div th:each="message : ${filsDiscussion}" class="discussion-message">
@@ -205,41 +204,117 @@
     <!-- Footer -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <!-- Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <script>
-        // Auto-scroll vers le bas des messages
+    <!-- Script pour la carte et gestion des messages -->
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            const messagesContainer = document.getElementById('messagesContainer');
-            if (messagesContainer) {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
+            const courseLocation = /*[[${course.lieu}]]*/ 'Paris, France';
+            const courseName = /*[[${course.nomCourse}]]*/ 'ColorRun';
             
-            // Supprimer les messages d'alerte après 5 secondes
+            console.log('🗺️ Initialisation de la carte pour:', courseLocation);
+            initializeMap(courseLocation, courseName);
+            
             setTimeout(function() {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(function(alert) {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
                     if (alert.classList.contains('show')) {
                         alert.classList.remove('show');
-                        setTimeout(function() {
-                            alert.remove();
-                        }, 150);
+                        setTimeout(() => alert.remove(), 150);
                     }
                 });
             }, 5000);
         });
         
-        // Soumission du formulaire avec Enter
+        function initializeMap(location, courseName) {
+            const mapContainer = document.getElementById('courseMap');
+            const mapLoading = mapContainer.querySelector('.map-loading');
+            
+            if (!mapContainer) {
+                console.error('❌ Container de carte non trouvé');
+                return;
+            }
+            
+            try {
+                console.log('🔍 Recherche de géolocalisation pour:', location);
+                
+                const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`;
+                
+                fetch(geocodeUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+                            
+                            console.log('✅ Coordonnées trouvées:', lat, lon);
+                            
+                            if (mapLoading) mapLoading.style.display = 'none';
+                            
+                            const map = L.map('courseMap').setView([lat, lon], 13);
+                            
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© OpenStreetMap contributors',
+                                maxZoom: 19
+                            }).addTo(map);
+                            
+                            const marker = L.marker([lat, lon]).addTo(map);
+                            marker.bindPopup(`
+                                <div style="text-align: center; padding: 5px;">
+                                    <strong>${courseName}</strong><br>
+                                    <small>${location}</small>
+                                </div>
+                            `).openPopup();
+                            
+                            console.log('✅ Carte initialisée avec succès');
+                            
+                        } else {
+                            console.warn('⚠️ Aucune coordonnée trouvée pour:', location);
+                            showMapError('Lieu non trouvé sur la carte');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ Erreur lors de la géolocalisation:', error);
+                        showMapError('Erreur de chargement de la carte');
+                    });
+                    
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'initialisation de la carte:', error);
+                showMapError('Erreur d\'initialisation de la carte');
+            }
+        }
+        
+        function showMapError(message) {
+            const mapContainer = document.getElementById('courseMap');
+            const mapLoading = mapContainer.querySelector('.map-loading');
+            
+            if (mapLoading) {
+                mapLoading.innerHTML = `
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <br>
+                        <span>${message}</span>
+                    </div>
+                `;
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            const messageInput = document.querySelector('input[name="message"]');
-            if (messageInput) {
-                messageInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        this.closest('form').submit();
-                    }
-                });
+            const messageForm = document.querySelector('.message-form');
+            if (messageForm) {
+                const messageInput = messageForm.querySelector('input[name="message"]');
+                const submitBtn = messageForm.querySelector('.send-btn');
+                
+                if (messageInput && submitBtn) {
+                    messageForm.addEventListener('submit', function() {
+                        if (messageInput.value.trim()) {
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                            submitBtn.disabled = true;
+                        }
+                    });
+                }
             }
         });
     </script>
