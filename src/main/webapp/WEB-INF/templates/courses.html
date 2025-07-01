@@ -176,6 +176,30 @@
                     </div>
                 </div>
 
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="pagination-section">
+                    <nav aria-label="Navigation des pages">
+                        <ul class="pagination">
+                            <!-- Pages numériques -->
+                            <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}" 
+                                class="page-item" 
+                                th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                                <a class="page-link" 
+                                   th:href="'?page=' + ${pageNum}"
+                                   th:text="${pageNum}">1</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    
+                    <!-- Informations sur la pagination -->
+                    <div class="pagination-info">
+                        <small class="text-muted">
+                            Page <strong th:text="${currentPage}">1</strong> sur <strong th:text="${totalPages}">2</strong>
+                            (<strong th:text="${totalCourses}">4</strong> courses au total)
+                        </small>
+                    </div>
+                </div>
+
                 <!-- Si aucune course -->
                 <div th:if="${courses == null or courses.isEmpty()}" class="no-courses">
                     <i class="fas fa-running"></i>

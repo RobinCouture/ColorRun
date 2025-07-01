@@ -550,3 +550,44 @@ select.filter-input {
         font-size: 1.5rem;
     }
 }
+
+/* ================================
+   PAGINATION
+   ================================ */
+.pagination-section {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.pagination {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    gap: 0.5rem;
+}
+
+.page-link {
+    padding: 0.5rem 1rem;
+    color: #667eea;
+    text-decoration: none;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.page-link:hover {
+    background: #f8f9fa;
+    text-decoration: none;
+}
+
+.page-item.active .page-link {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.page-item.disabled .page-link {
+    color: #ccc;
+    pointer-events: none;
+}

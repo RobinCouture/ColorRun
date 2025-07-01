@@ -55,7 +55,7 @@ public class CoursesServlet extends HttpServlet {
 
             // Pagination
             int page = 1;
-            int pageSize = 6; // 6 courses par page
+            int pageSize = 4; // 4 courses par page
             String pageParam = req.getParameter("page");
             if (pageParam != null && !pageParam.isEmpty()) {
                 try {
