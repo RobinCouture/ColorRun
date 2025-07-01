@@ -240,6 +240,12 @@ public class CreateCourseServlet extends HttpServlet {
             coursesRepository.create(course);
             
             System.out.println("Course sauvegardée avec succès, ID: " + course.getId());
+
+            if (imageUrl != null) {
+                // Enregistrer l'image dans la base de données
+                coursesRepository.uploadImageCourse(course.getId(), imageUrl);
+                System.out.println("Image de course enregistrée en base de données: " + imageUrl);
+            }
             
             // Redirection vers la page des courses avec message de succès
             resp.sendRedirect(req.getContextPath() + "/courses?success=created");

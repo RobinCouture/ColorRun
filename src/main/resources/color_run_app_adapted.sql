@@ -66,6 +66,13 @@ CREATE TABLE IF NOT EXISTS PagesStatiques (
     date_derniere_modif DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Table : Images des Courses
+CREATE TABLE IF NOT EXISTS IMAGECOURSE (
+    IDIMAGE INT AUTO_INCREMENT PRIMARY KEY,
+    IDCOURSE INT,
+    PATH TEXT
+);
+
 -- Index pour optimiser les recherches
 CREATE INDEX IF NOT EXISTS idx_email ON Utilisateurs(email);
 CREATE INDEX IF NOT EXISTS idx_course_inscriptions ON Inscriptions(id_course);
@@ -98,3 +105,6 @@ WHERE NOT EXISTS (SELECT 1 FROM Courses WHERE nom_course = 'ColorRun Marseille')
 
 -- H2 : Forcer la réinitialisation de l'auto-increment à la prochaine valeur libre
 ALTER TABLE Courses ALTER COLUMN id_course RESTART WITH (SELECT MAX(id_course) + 1 FROM Courses);
+
+-- Reset the auto-increment sequence for IMAGECOURSE
+ALTER TABLE IMAGECOURSE ALTER COLUMN IDIMAGE RESTART WITH (SELECT COALESCE(MAX(IDIMAGE), 0) + 1 FROM IMAGECOURSE);

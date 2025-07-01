@@ -38,6 +38,14 @@ public class CoursesServlet extends HttpServlet {
             List<Courses> filteredCourses = applyFilters(allCourses, req);
             System.out.println("🔍 Courses après filtrage: " + filteredCourses.size());
 
+            Map<Integer, String> courseImages = new HashMap<>();
+            for (Courses course : filteredCourses) {
+                String imagePath = coursesRepository.getImagePathById(course.getId());
+                if (imagePath != null && !imagePath.isEmpty()) {
+                    courseImages.put(course.getId(), imagePath);
+                }
+            }
+
             // Appliquer le tri
             String sortBy = req.getParameter("sortBy");
             if (sortBy == null || sortBy.isEmpty()) {
@@ -90,6 +98,7 @@ public class CoursesServlet extends HttpServlet {
             data.put("hasPrevious", page > 1);
             data.put("utilisateurConnecte", utilisateurConnecte);
             data.put("pageTitle", "Courses ColorRun");
+            data.put("courseImages", courseImages);
             
             // Données pour les filtres
             data.put("villes", villes.stream().sorted().collect(Collectors.toList()));

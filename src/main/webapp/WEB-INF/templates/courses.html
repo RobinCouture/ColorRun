@@ -82,12 +82,12 @@
                     <div th:each="course : ${courses}" class="course-item">
                         <!-- Image de la course (côté gauche) -->
                         <div class="course-map">
-                            <div class="course-image-mini" th:if="${course.imageUrl != null and !course.imageUrl.isEmpty()}">
-                                <img th:src="${course.imageUrl}" 
+                            <div class="course-image-mini" th:if="${courseImages.get(course.id) != null and !courseImages.get(course.id).isEmpty()}">
+                                <img th:src="${courseImages.get(course.id)}" 
                                      th:alt="${course.nomCourse}" 
                                      class="course-thumbnail">
                             </div>
-                            <div class="map-placeholder" th:if="${course.imageUrl == null or course.imageUrl.isEmpty()}">
+                            <div class="map-placeholder" th:if="${courseImages.get(course.id) == null or courseImages.get(course.id).isEmpty()}">
                                 <i class="fas fa-image"></i>
                                 <span>Image course</span>
                             </div>

@@ -6,13 +6,13 @@ import fr.esgi.robin.colorrun.database.DatabaseConfig;
 import fr.esgi.robin.colorrun.repository.CoursesRepository;
 import fr.esgi.robin.colorrun.repository.UtilisateurRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CoursesRepositoryImpl implements CoursesRepository {
     
@@ -169,7 +169,43 @@ public class CoursesRepositoryImpl implements CoursesRepository {
             throw new RuntimeException("Impossible de supprimer la course", e);
         }
     }
-    
+
+    @Override
+    public void uploadImageCourse(Integer idcourse, String imagePath) {
+        String query = "INSERT INTO IMAGECOURSE (IDCOURSE, PATH) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idcourse);
+            stmt.setString(2, imagePath);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de l'upload de l'image de la course: " + e.getMessage());
+            throw new RuntimeException("Impossible d'uploader l'image de la course", e);
+        }
+    }
+
+    @Override
+    public String getImagePathById(Integer idcourse) {
+        String query = "SELECT PATH FROM IMAGECOURSE WHERE IDCOURSE = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idcourse);
+            var rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("PATH");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération du chemin de l'image de la course: " + e.getMessage());
+        }
+
+        return null;
+    }
+
     /**
      * Méthode helper pour mapper un ResultSet vers un objet Courses
      */

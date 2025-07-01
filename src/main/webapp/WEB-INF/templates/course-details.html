@@ -59,9 +59,9 @@
                     <div class="course-main-info">
                         <!-- Image de la course -->
                         <div class="course-image-section">
-                            <div class="course-image-container" th:if="${course.imageUrl != null and !course.imageUrl.isEmpty()}">
-                                <img th:src="${course.imageUrl}" 
-                                     th:alt="${course.nomCourse}" 
+                            <div class="course-image-container" th:if="${pathImage != null and !pathImage.isEmpty()}">
+                                <img th:src="${pathImage}"
+                                     th:alt="${course.nomCourse}"
                                      class="course-image"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                 <div class="course-image-placeholder" style="display: none;">
@@ -69,7 +69,7 @@
                                     <span>Image non disponible</span>
                                 </div>
                             </div>
-                            <div class="course-image-placeholder" th:if="${course.imageUrl == null or course.imageUrl.isEmpty()}">
+                            <div class="course-image-placeholder" th:if="${pathImage == null or pathImage.isEmpty()}">
                                 <i class="fas fa-image"></i>
                                 <span>Image Course</span>
                             </div>

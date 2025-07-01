@@ -205,6 +205,8 @@ public class CourseDetailsServlet extends HttpServlet {
             }
     
             System.out.println("✅ Course trouvée: " + course.getNomCourse());
+
+            String pathImage = coursesRepository.getImagePathById(courseId);
     
             // Récupérer les messages de la course
             List<FilsDiscussion> filsDiscussion = filsDiscussionRepository.findByCourseId(courseId);
@@ -223,6 +225,9 @@ public class CourseDetailsServlet extends HttpServlet {
     
             // Vérifier si les inscriptions sont ouvertes
             boolean inscriptionsOuvertes = course.getDateHeure().isAfter(Instant.now());
+
+            // Vérifier si l'utilisateur est déjà inscrit
+            boolean dejaInscrit = false;
     
             // Préparer les données pour le template
             Map<String, Object> data = new HashMap<>();
@@ -232,7 +237,9 @@ public class CourseDetailsServlet extends HttpServlet {
             data.put("peutGererCourse", peutGererCourse);
             data.put("peutSinscrire", peutSinscrire);
             data.put("inscriptionsOuvertes", inscriptionsOuvertes);
+            data.put("dejaInscrit", dejaInscrit);
             data.put("pageTitle", course.getNomCourse() + " - ColorRun");
+            data.put("pathImage", pathImage);
     
             TemplateUtil.processTemplate("course-details", req, resp, data);
     
