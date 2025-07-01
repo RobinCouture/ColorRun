@@ -56,6 +56,12 @@
                             <p>Accédez à votre espace ColorRun</p>
                         </div>
                         
+                        <!-- Message de succès -->
+                        <div th:if="${successMessage}" class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <span th:text="${successMessage}">Message de succès</span>
+                        </div>
+                        
                         <!-- Message d'erreur -->
                         <div th:if="${errorMessage}" class="alert alert-danger">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -86,7 +92,7 @@
                                     <input type="checkbox" id="remember" name="remember" class="form-check-input">
                                     <label for="remember" class="form-check-label">Se souvenir de moi</label>
                                 </div>
-                                <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                                <a th:href="@{/forgot-password}" class="forgot-password">Mot de passe oublié ?</a>
                             </div>
                             
                             <button type="submit" class="btn btn-auth">

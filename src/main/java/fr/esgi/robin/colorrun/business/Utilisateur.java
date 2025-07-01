@@ -33,6 +33,12 @@ public class Utilisateur {
     @Column(name = "ROLE")
     private String roleString = "participant";
 
+    @Column(name = "RESET_TOKEN")
+    private String resetToken;
+
+    @Column(name = "RESET_TOKEN_EXPIRATION")
+    private Instant resetTokenExpiration;
+
     public Utilisateur() {
     }
 
@@ -133,6 +139,22 @@ public class Utilisateur {
 
     public String getNomComplet() {
         return this.prenom + " " + this.nom;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Instant getResetTokenExpiration() {
+        return resetTokenExpiration;
+    }
+
+    public void setResetTokenExpiration(Instant resetTokenExpiration) {
+        this.resetTokenExpiration = resetTokenExpiration;
     }
 
 /*

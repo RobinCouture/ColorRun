@@ -45,21 +45,21 @@ public class AdminDemandesServlet extends HttpServlet {
         
         // Récupérer toutes les demandes
         List<Demandesorganisateur> demandes = new ArrayList<>();
-        Map<StatutDemande, Long> stats = new HashMap<>();
+        Map<String, Long> stats = new HashMap<>();
         
         try {
             demandes = demandeRepository.findAll();
             
-            // Calculer les statistiques
-            stats.put(StatutDemande.EN_ATTENTE, demandes.stream().filter(d -> d.getStatut() == StatutDemande.EN_ATTENTE).count());
-            stats.put(StatutDemande.ACCEPTE, demandes.stream().filter(d -> d.getStatut() == StatutDemande.ACCEPTE).count());
-            stats.put(StatutDemande.REFUSE, demandes.stream().filter(d -> d.getStatut() == StatutDemande.REFUSE).count());
+            // Calculer les statistiques avec des clés simples
+            stats.put("EN_ATTENTE", demandes.stream().filter(d -> d.getStatut() == StatutDemande.EN_ATTENTE).count());
+            stats.put("ACCEPTE", demandes.stream().filter(d -> d.getStatut() == StatutDemande.ACCEPTE).count());
+            stats.put("REFUSE", demandes.stream().filter(d -> d.getStatut() == StatutDemande.REFUSE).count());
             
         } catch (Exception e) {
             // Initialiser des valeurs par défaut en cas d'erreur
-            stats.put(StatutDemande.EN_ATTENTE, 0L);
-            stats.put(StatutDemande.ACCEPTE, 0L);
-            stats.put(StatutDemande.REFUSE, 0L);
+            stats.put("EN_ATTENTE", 0L);
+            stats.put("ACCEPTE", 0L);
+            stats.put("REFUSE", 0L);
             
             session.setAttribute("errorMessage", "Erreur lors du chargement des demandes. Vérifiez que la table existe.");
         }

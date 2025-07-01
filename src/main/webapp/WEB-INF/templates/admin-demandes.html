@@ -19,6 +19,7 @@
     <link th:href="@{/ressources/css/layouts/footer.css}" rel="stylesheet">
     <link th:href="@{/ressources/css/components/floating-messages.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
 </head>
 <body class="admin-demandes">
     <!-- Navigation -->
@@ -56,19 +57,19 @@
             <div class="row mb-5">
                 <div class="col-md-4 mb-3">
                     <div class="stats-card pending">
-                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).EN_ATTENTE) : 0}">0</div>
+                        <div class="stats-number" th:text="${stats != null ? stats.get('EN_ATTENTE') : 0}">0</div>
                         <div class="stats-label">En attente</div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
                     <div class="stats-card accepted">
-                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).ACCEPTE) : 0}">0</div>
+                        <div class="stats-number" th:text="${stats != null ? stats.get('ACCEPTE') : 0}">0</div>
                         <div class="stats-label">Acceptées</div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
                     <div class="stats-card rejected">
-                        <div class="stats-number" th:text="${stats != null ? stats.get(T(fr.esgi.robin.colorrun.business.StatutDemande).REFUSE) : 0}">0</div>
+                        <div class="stats-number" th:text="${stats != null ? stats.get('REFUSE') : 0}">0</div>
                         <div class="stats-label">Refusées</div>
                     </div>
                 </div>

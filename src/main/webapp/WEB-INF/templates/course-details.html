@@ -7,10 +7,10 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Fonts -->
+  <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -113,23 +113,27 @@
                             <p th:text="${course.causeSoutenue}">Soutien aux enfants malades</p>
                         </div>
                         
-                        <!-- Lieu avec OpenStreetMap -->
-                        <div class="course-location-section">
-                            <h3><i class="fas fa-map-marker-alt me-2"></i>Lieu de la course</h3>
-                            <div class="location-map">
-                                <div id="courseMap" class="leaflet-map-container" th:data-location="${course.lieu}">
-                                    <div class="map-loading">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <span>Chargement de la carte...</span>
-                                    </div>
+                        <!-- Lieu de la course -->
+                        <div class="info-card">
+                            <h3 class="section-title">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                Lieu de la course
+                            </h3>
+                            
+                            <div class="course-location">
+                                <div class="location-info">
+                                    <p class="location-address">
+                                        <strong>Adresse :</strong> <span th:text="${course.lieu}">Paris, France</span>
+                                    </p>
+                                    <p class="location-note">
+                                        <i class="fas fa-info-circle"></i>
+                                        <a th:href="'https://maps.google.com/maps?q=' + ${course.lieu}" 
+                                           target="_blank" 
+                                           class="map-link">
+                                            📍 Voir sur Google Maps
+                                        </a>
+                                    </p>
                                 </div>
-                            </div>
-                            <div class="location-info">
-                                <p><strong>Adresse :</strong> <span th:text="${course.lieu}">Paris, France</span></p>
-                                <small class="text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Cliquez sur le marker pour plus d'informations
-                                </small>
                             </div>
                         </div>
                     </div>
@@ -179,10 +183,35 @@
                         
                         <!-- Bouton d'inscription -->
                         <div class="registration-section">
-                            <button class="register-btn" onclick="alert('Fonctionnalité d\'inscription à venir !')">
-                                <i class="fas fa-running"></i>
-                                S'inscrire à cette course
-                            </button>
+                            <!-- Vérifier si l'utilisateur est connecté et si les inscriptions sont ouvertes -->
+                            <div th:if="${session.utilisateur == null}">
+                                <a th:href="@{/login}" class="register-btn disabled">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Connectez-vous pour vous inscrire
+                                </a>
+                            </div>
+                            
+                            <div th:if="${session.utilisateur != null}">
+                                <!-- Si les inscriptions sont ouvertes (utiliser une variable du servlet) -->
+                                <div th:if="${inscriptionsOuvertes}">
+                                    <form method="post" th:action="@{'/course/' + ${course.id} + '/inscription'}" 
+                                          onsubmit="return confirm('Confirmer votre inscription à cette course ?')">
+                                        <button type="submit" class="register-btn">
+                                            <i class="fas fa-running"></i>
+                                            S'inscrire à cette course
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Si les inscriptions sont fermées -->
+                                <div th:unless="${inscriptionsOuvertes}">
+                                    <button class="register-btn disabled" disabled>
+                                        <i class="fas fa-calendar-times"></i>
+                                        Inscriptions fermées
+                                    </button>
+                                </div>
+                            </div>
+                            
                             <p class="registration-info">
                                 <small class="text-muted">
                                     <i class="fas fa-calendar me-1"></i>
@@ -206,12 +235,7 @@
     <!-- Script pour la carte et gestion des messages -->
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            const courseLocation = /*[[${course.lieu}]]*/ 'Paris, France';
-            const courseName = /*[[${course.nomCourse}]]*/ 'ColorRun';
-            
-            console.log('🗺️ Initialisation de la carte pour:', courseLocation);
-            initializeMap(courseLocation, courseName);
-            
+            // Supprimer les messages d'alerte après 5 secondes
             setTimeout(function() {
                 const alerts = document.querySelectorAll('.alert');
                 alerts.forEach(alert => {
@@ -221,82 +245,8 @@
                     }
                 });
             }, 5000);
-        });
-        
-        function initializeMap(location, courseName) {
-            const mapContainer = document.getElementById('courseMap');
-            const mapLoading = mapContainer.querySelector('.map-loading');
             
-            if (!mapContainer) {
-                console.error('❌ Container de carte non trouvé');
-                return;
-            }
-            
-            try {
-                console.log('🔍 Recherche de géolocalisation pour:', location);
-                
-                const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`;
-                
-                fetch(geocodeUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const lat = parseFloat(data[0].lat);
-                            const lon = parseFloat(data[0].lon);
-                            
-                            console.log('✅ Coordonnées trouvées:', lat, lon);
-                            
-                            if (mapLoading) mapLoading.style.display = 'none';
-                            
-                            const map = L.map('courseMap').setView([lat, lon], 13);
-                            
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '© OpenStreetMap contributors',
-                                maxZoom: 19
-                            }).addTo(map);
-                            
-                            const marker = L.marker([lat, lon]).addTo(map);
-                            marker.bindPopup(`
-                                <div style="text-align: center; padding: 5px;">
-                                    <strong>${courseName}</strong><br>
-                                    <small>${location}</small>
-                                </div>
-                            `).openPopup();
-                            
-                            console.log('✅ Carte initialisée avec succès');
-                            
-                        } else {
-                            console.warn('⚠️ Aucune coordonnée trouvée pour:', location);
-                            showMapError('Lieu non trouvé sur la carte');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('❌ Erreur lors de la géolocalisation:', error);
-                        showMapError('Erreur de chargement de la carte');
-                    });
-                    
-            } catch (error) {
-                console.error('❌ Erreur lors de l\'initialisation de la carte:', error);
-                showMapError('Erreur d\'initialisation de la carte');
-            }
-        }
-        
-        function showMapError(message) {
-            const mapContainer = document.getElementById('courseMap');
-            const mapLoading = mapContainer.querySelector('.map-loading');
-            
-            if (mapLoading) {
-                mapLoading.innerHTML = `
-                    <div style="text-align: center; color: #dc3545;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <br>
-                        <span>${message}</span>
-                    </div>
-                `;
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des messages de formulaire
             const messageForm = document.querySelector('.message-form');
             if (messageForm) {
                 const messageInput = messageForm.querySelector('input[name="message"]');

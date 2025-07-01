@@ -6,13 +6,20 @@ import fr.esgi.robin.colorrun.repository.CoursesRepository;
 import fr.esgi.robin.colorrun.repository.impl.CoursesRepositoryImpl;
 import fr.esgi.robin.colorrun.util.TemplateUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,11 +27,19 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @WebServlet("/create-course")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024, // 1 MB
+    maxFileSize = 1024 * 1024 * 5,   // 5 MB
+    maxRequestSize = 1024 * 1024 * 10 // 10 MB
+)
 public class CreateCourseServlet extends HttpServlet {
     
     private CoursesRepository coursesRepository = new CoursesRepositoryImpl();
+    private static final String UPLOAD_DIRECTORY = "course-images";
+    private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -189,6 +204,23 @@ public class CreateCourseServlet extends HttpServlet {
                 return;
             }
             
+            // Traitement de l'image
+            String imageUrl = null;
+            Part imagePart = req.getPart("courseImage");
+            
+            if (imagePart != null && imagePart.getSize() > 0) {
+                imageUrl = handleImageUpload(imagePart, req);
+                if (imageUrl == null) {
+                    Map<String, Object> variables = new HashMap<>();
+                    variables.put("pageTitle", "Créer une course");
+                    variables.put("error", "Erreur lors de l'upload de l'image. Vérifiez le format (JPG, PNG, GIF, WEBP) et la taille (max 5MB).");
+                    addFormDataToVariables(variables, nomCourse, description, dateHeureStr, lieu, distanceStr, prixStr, nbMaxParticipantsStr, causeSoutenue);
+                    
+                    TemplateUtil.processTemplate("create-course", req, resp, variables);
+                    return;
+                }
+            }
+            
             // Créer la course
             Courses course = new Courses();
             course.setNomCourse(nomCourse.trim());
@@ -198,46 +230,88 @@ public class CreateCourseServlet extends HttpServlet {
             course.setDistance(distance);
             course.setPrix(prix);
             course.setNbMaxParticipants(nbMaxParticipants);
-            course.setCauseSoutenue(causeSoutenue != null ? causeSoutenue.trim() : "");
+            course.setCauseSoutenue(causeSoutenue != null ? causeSoutenue.trim() : null);
+            course.setImageUrl(imageUrl);
             course.setUtilisateur(utilisateur);
             
-            System.out.println("Création de la course avec organisateur ID: " + utilisateur.getId());
+            System.out.println("Course créée avec image: " + imageUrl);
             
-            // Sauvegarder en base de données
+            // Sauvegarder en base
             coursesRepository.create(course);
-            System.out.println("Course créée avec succès !");
             
-            // Rediriger vers la liste des courses avec message de succès
-            resp.sendRedirect(req.getContextPath() + "/courses?success=" + 
-                java.net.URLEncoder.encode("Course '" + nomCourse + "' créée avec succès !", "UTF-8"));
+            System.out.println("Course sauvegardée avec succès, ID: " + course.getId());
+            
+            // Redirection vers la page des courses avec message de succès
+            resp.sendRedirect(req.getContextPath() + "/courses?success=created");
             
         } catch (Exception e) {
-            System.err.println("Erreur lors de la création de la course:");
+            System.err.println("Erreur lors de la création de la course: " + e.getMessage());
             e.printStackTrace();
             
-            // En cas d'erreur, retourner au formulaire avec le message d'erreur
             Map<String, Object> variables = new HashMap<>();
             variables.put("pageTitle", "Créer une course");
-            variables.put("error", "Erreur lors de la création de la course : " + e.getMessage());
-            
-            // Récupérer les données du formulaire pour les remettre
-            addFormDataToVariables(variables, 
-                req.getParameter("nomCourse"),
-                req.getParameter("description"),
-                req.getParameter("dateHeure"),
-                req.getParameter("lieu"),
-                req.getParameter("distance"),
-                req.getParameter("prix"),
-                req.getParameter("nbMaxParticipants"),
-                req.getParameter("causeSoutenue"));
+            variables.put("error", "Erreur inattendue lors de la création de la course: " + e.getMessage());
             
             TemplateUtil.processTemplate("create-course", req, resp, variables);
         }
     }
     
-    /**
-     * Méthode helper pour ajouter les données du formulaire aux variables du template
-     */
+    private String handleImageUpload(Part imagePart, HttpServletRequest request) {
+        try {
+            String fileName = imagePart.getSubmittedFileName();
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return null;
+            }
+            
+            // Vérifier l'extension
+            String fileExtension = getFileExtension(fileName).toLowerCase();
+            if (!isAllowedExtension(fileExtension)) {
+                return null;
+            }
+            
+            // Créer le répertoire de destination s'il n'existe pas
+            String realPath = getServletContext().getRealPath("/");
+            Path uploadPath = Paths.get(realPath, "ressources", "images", UPLOAD_DIRECTORY);
+            
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            
+            // Générer un nom unique pour le fichier
+            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+            Path targetPath = uploadPath.resolve(uniqueFileName);
+            
+            // Sauvegarder le fichier
+            try (InputStream inputStream = imagePart.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            // Construire l'URL pour accéder à l'image
+            return request.getContextPath() + "/ressources/images/" + UPLOAD_DIRECTORY + "/" + uniqueFileName;
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'upload d'image: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < fileName.length() - 1) {
+            return fileName.substring(lastDotIndex);
+        }
+        return "";
+    }
+    
+    private boolean isAllowedExtension(String extension) {
+        for (String allowed : ALLOWED_EXTENSIONS) {
+            if (allowed.equals(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private void addFormDataToVariables(Map<String, Object> variables, String nomCourse, String description, 
                                       String dateHeure, String lieu, String distance, String prix, 
                                       String nbMaxParticipants, String causeSoutenue) {

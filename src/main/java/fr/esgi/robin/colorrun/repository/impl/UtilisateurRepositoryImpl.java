@@ -198,4 +198,30 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
         }
         return 0;
     }
+
+    @Override
+public Utilisateur findByResetToken(String resetToken) {
+    String query = "SELECT * FROM UTILISATEURS WHERE RESET_TOKEN = ?";
+    try (Connection conn = DatabaseConfig.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, resetToken);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            Utilisateur utilisateur = new Utilisateur(
+                rs.getInt("ID_UTILISATEUR"),
+                rs.getString("NOM"),
+                rs.getString("PRENOM"),
+                rs.getString("EMAIL"),
+                rs.getString("MOT_DE_PASSE"),
+                rs.getString("PHOTO_PROFIL"),
+                rs.getObject("DATE_INSCRIPTION", Instant.class)
+            );
+            utilisateur.setRoleString(rs.getString("ROLE"));
+            return utilisateur;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
 }

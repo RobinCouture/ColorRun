@@ -41,10 +41,12 @@ public class CoursesRepositoryImpl implements CoursesRepository {
                 throw new SQLException("La création de la course a échoué, aucune ligne affectée.");
             }
 
-            // Récupérer l'ID généré
-            var rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                course.setId(rs.getInt(1));
+            // Récupérer l'ID généré automatiquement
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    course.setId(rs.getInt(1));
+                    System.out.println("✅ Course créée avec ID: " + course.getId());
+                }
             }
             
         } catch (SQLException e) {

@@ -175,59 +175,67 @@ public class CourseDetailsServlet extends HttpServlet {
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             System.out.println("🚀 CourseDetailsServlet - processRequest appelé");
-
+    
             // Extraire l'ID de l'URL (/course/1 -> 1)
             String pathInfo = req.getPathInfo();
             if (pathInfo == null || pathInfo.length() <= 1) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de course manquant");
                 return;
             }
-
+    
             String courseIdStr = pathInfo.substring(1);
             Integer courseId;
-
+    
             try {
                 courseId = Integer.parseInt(courseIdStr);
             } catch (NumberFormatException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de course invalide");
                 return;
             }
-
+    
             System.out.println("📍 Recherche de la course avec ID: " + courseId);
-
+    
             // Récupérer la course par ID
             Courses course = coursesRepository.findById(courseId);
-
+    
             if (course == null) {
                 System.out.println("❌ Course non trouvée pour ID: " + courseId);
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Course non trouvée");
                 return;
             }
-
+    
             System.out.println("✅ Course trouvée: " + course.getNomCourse());
-
+    
             // Récupérer les messages de la course
             List<FilsDiscussion> filsDiscussion = filsDiscussionRepository.findByCourseId(courseId);
             System.out.println("📨 Nombre de messages trouvés: " + filsDiscussion.size());
-
+    
             // Vérifier si l'utilisateur est connecté
             HttpSession session = req.getSession();
             Utilisateur utilisateurConnecte = (Utilisateur) session.getAttribute("utilisateur");
             boolean peutEnvoyerMessage = utilisateurConnecte != null;
-
-            // Vérifier si l'utilisateur peut gérer cette course
+    
+            // Vérifier si l'utilisateur peut gérer cette course (pour afficher boutons modifier/supprimer)
             boolean peutGererCourse = canManageCourse(utilisateurConnecte, course);
-
+            
+            // Vérifier si l'utilisateur peut s'inscrire (tous les utilisateurs connectés peuvent s'inscrire)
+            boolean peutSinscrire = utilisateurConnecte != null;
+    
+            // Vérifier si les inscriptions sont ouvertes
+            boolean inscriptionsOuvertes = course.getDateHeure().isAfter(Instant.now());
+    
             // Préparer les données pour le template
             Map<String, Object> data = new HashMap<>();
             data.put("course", course);
             data.put("filsDiscussion", filsDiscussion);
             data.put("peutEnvoyerMessage", peutEnvoyerMessage);
             data.put("peutGererCourse", peutGererCourse);
+            data.put("peutSinscrire", peutSinscrire);
+            data.put("inscriptionsOuvertes", inscriptionsOuvertes);
             data.put("pageTitle", course.getNomCourse() + " - ColorRun");
-
+    
             TemplateUtil.processTemplate("course-details", req, resp, data);
-
+    
         } catch (Exception e) {
             System.out.println("❌ Erreur dans CourseDetailsServlet: " + e.getMessage());
             e.printStackTrace();

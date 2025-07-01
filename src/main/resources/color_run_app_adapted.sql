@@ -72,27 +72,29 @@ CREATE INDEX IF NOT EXISTS idx_course_inscriptions ON Inscriptions(id_course);
 CREATE INDEX IF NOT EXISTS idx_utilisateur_discussion ON FilsDiscussion(id_utilisateur);
 CREATE INDEX IF NOT EXISTS idx_statut_demandes ON DemandesOrganisateur(statut);
 
--- Données initiales avec MERGE pour éviter les doublons
-MERGE INTO Utilisateurs (id_utilisateur, nom, prenom, email, mot_de_passe, role)
-KEY(email)
-VALUES (1, 'Admin', 'ColorRun', 'admin@colorun.com', 'hashed_password', 'admin');
+-- Données initiales - SYNTAXE H2 CORRECTE
+-- Utiliser INSERT avec conditions pour éviter les doublons
+INSERT INTO Utilisateurs (id_utilisateur, nom, prenom, email, mot_de_passe, role)
+SELECT 1, 'Admin', 'ColorRun', 'admin@colorun.com', 'hashed_password', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM Utilisateurs WHERE email = 'admin@colorun.com');
 
--- Ajouter des courses d'exemple SANS spécifier l'ID (laisser l'auto-increment faire son travail)
--- On utilise INSERT avec ON DUPLICATE KEY UPDATE pour éviter les doublons par nom
+-- Utilisateur test avec SYNTAXE H2
+INSERT INTO Utilisateurs (nom, prenom, email, mot_de_passe, role, date_inscription)
+SELECT 'Test', 'Admin', 'test@admin.com', 'admin123', 'admin', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM Utilisateurs WHERE email = 'test@admin.com');
+
+-- Courses avec DATES FUTURES (2025-2026) - SANS SPÉCIFIER L'ID
 INSERT INTO Courses (nom_course, description, date_heure, lieu, distance, prix, nb_max_participants, cause_soutenue, organisateur_id)
-SELECT 'ColorRun Paris', 'Une course colorée au cœur de la capitale française. Venez vivre une expérience unique dans les rues de Paris avec des milliers de participants !', '2024-06-15 10:00:00', 'Paris, France', 5.0, 25.0, 500, 'Soutien aux enfants malades', 1
+SELECT 'ColorRun Paris', 'Une course colorée au cœur de la capitale française. Venez vivre une expérience unique dans les rues de Paris avec des milliers de participants !', '2025-09-15 10:00:00', 'Paris, France', 5.0, 25.0, 500, 'Soutien aux enfants malades', 1
 WHERE NOT EXISTS (SELECT 1 FROM Courses WHERE nom_course = 'ColorRun Paris');
 
 INSERT INTO Courses (nom_course, description, date_heure, lieu, distance, prix, nb_max_participants, cause_soutenue, organisateur_id)
-SELECT 'ColorRun Lyon', 'Découvrez la ville des lumières sous un nouveau jour avec notre course colorée à travers Lyon. Un parcours magique vous attend !', '2024-07-20 09:30:00', 'Lyon, France', 3.5, 20.0, 300, 'Protection de l''environnement', 1
+SELECT 'ColorRun Lyon', 'Découvrez la ville des lumières sous un nouveau jour avec notre course colorée à travers Lyon. Un parcours magique vous attend !', '2025-10-20 09:30:00', 'Lyon, France', 3.5, 20.0, 300, 'Protection de l''environnement', 1
 WHERE NOT EXISTS (SELECT 1 FROM Courses WHERE nom_course = 'ColorRun Lyon');
 
 INSERT INTO Courses (nom_course, description, date_heure, lieu, distance, prix, nb_max_participants, cause_soutenue, organisateur_id)
-SELECT 'ColorRun Marseille', 'Course au bord de la Méditerranée avec une vue imprenable sur la mer. Courez dans un cadre idyllique !', '2024-08-10 08:00:00', 'Marseille, France', 7.0, 30.0, 400, 'Aide aux personnes âgées', 1
+SELECT 'ColorRun Marseille', 'Course au bord de la Méditerranée avec une vue imprenable sur la mer. Courez dans un cadre idyllique !', '2025-11-10 08:00:00', 'Marseille, France', 7.0, 30.0, 400, 'Aide aux personnes âgées', 1
 WHERE NOT EXISTS (SELECT 1 FROM Courses WHERE nom_course = 'ColorRun Marseille');
 
--- Réinitialiser le compteur auto-increment pour éviter les conflits
-ALTER TABLE Courses AUTO_INCREMENT = 10;
-
-INSERT INTO Utilisateurs (nom, prenom, email, mot_de_passe, role, date_inscription)
-VALUES ('Test', 'Admin', 'test@admin.com', 'admin123', 'admin', CURRENT_TIMESTAMP);
+-- H2 : Forcer la réinitialisation de l'auto-increment à la prochaine valeur libre
+ALTER TABLE Courses ALTER COLUMN id_course RESTART WITH (SELECT MAX(id_course) + 1 FROM Courses);
