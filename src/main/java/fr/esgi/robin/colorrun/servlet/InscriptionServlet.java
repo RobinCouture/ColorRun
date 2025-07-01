@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.Instant;
 
-@WebServlet(name = "inscription", value = "/course/*/inscription")
+@WebServlet(name = "inscription", urlPatterns = {"/inscription/*"})
 public class InscriptionServlet extends HttpServlet {
     private final InscriptionRepository inscriptionRepository = new InscriptionRepositoryImpl();
     private final CoursesRepository coursesRepository = new CoursesRepositoryImpl();
@@ -45,7 +45,7 @@ public class InscriptionServlet extends HttpServlet {
             
             // Pattern: /course/4/inscription -> extraire le 4
             String[] pathParts = path.split("/");
-            if (pathParts.length < 4 || !"course".equals(pathParts[1]) || !"inscription".equals(pathParts[3])) {
+            if (pathParts.length < 3 || !"inscription".equals(pathParts[1])) {
                 System.out.println("❌ URL invalide: " + path);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "URL invalide");
                 return;

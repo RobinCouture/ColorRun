@@ -194,7 +194,7 @@
                             <div th:if="${session.utilisateur != null}">
                                 <!-- Si les inscriptions sont ouvertes (utiliser une variable du servlet) -->
                                 <div th:if="${inscriptionsOuvertes}">
-                                    <form method="post" th:action="@{'/course/' + ${course.id} + '/inscription'}" 
+                                    <form method="post" th:action="@{/inscription/{courseId}(courseId=${course.id})}"
                                           onsubmit="return confirm('Confirmer votre inscription à cette course ?')">
                                         <button type="submit" class="register-btn">
                                             <i class="fas fa-running"></i>
