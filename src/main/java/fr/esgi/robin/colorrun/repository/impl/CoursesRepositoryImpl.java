@@ -171,18 +171,36 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     }
 
     @Override
-    public void uploadImageCourse(Integer idcourse, String imagePath) {
-        String query = "INSERT INTO IMAGECOURSE (IDCOURSE, PATH) VALUES (?, ?)";
+    public void uploadImageCourse(Integer idcourse, String imagePath, String imageNom) {
+        String query = "INSERT INTO IMAGECOURSE (IDCOURSE, PATH, NOM) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, idcourse);
             stmt.setString(2, imagePath);
+            stmt.setString(3, imageNom);
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Erreur lors de l'upload de l'image de la course: " + e.getMessage());
             throw new RuntimeException("Impossible d'uploader l'image de la course", e);
+        }
+    }
+
+    @Override
+    public void updateImageCourse(Integer idcourse, String imagePath, String imageNom) {
+        String query = "UPDATE IMAGECOURSE SET PATH = ?, NOM = ? WHERE IDCOURSE = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, imagePath);
+            stmt.setString(2, imageNom);
+            stmt.setInt(3, idcourse);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour de l'image de la course: " + e.getMessage());
+            throw new RuntimeException("Impossible de mettre à jour l'image de la course", e);
         }
     }
 

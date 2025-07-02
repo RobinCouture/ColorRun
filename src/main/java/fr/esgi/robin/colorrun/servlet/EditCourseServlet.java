@@ -113,6 +113,7 @@ public class EditCourseServlet extends HttpServlet {
             Integer courseId = Integer.parseInt(pathInfo.substring(1));
             
             Courses course = coursesRepository.findById(courseId);
+            String currentImageUrl = coursesRepository.getImagePathById(courseId);
             
             if (course == null) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Course non trouvée");
@@ -162,19 +163,18 @@ public class EditCourseServlet extends HttpServlet {
                 
                 // Traitement de l'image
                 String newImageUrl = null;
+                String newImageName = null;
                 Part imagePart = req.getPart("courseImage");
                 
                 if (imagePart != null && imagePart.getSize() > 0) {
                     // Une nouvelle image a été uploadée
                     newImageUrl = handleImageUpload(imagePart, req);
+                    newImageName = imagePart.getSubmittedFileName();
                     if (newImageUrl == null) {
                         session.setAttribute("errorMessage", "Erreur lors de l'upload de l'image. Vérifiez le format (JPG, PNG, GIF, WEBP) et la taille (max 5MB).");
                         resp.sendRedirect(req.getRequestURI());
                         return;
                     }
-                } else {
-                    // Garder l'image actuelle
-                    newImageUrl = coursesRepository.getImagePathById(courseId);
                 }
                 
                 // Mettre à jour l'objet course
@@ -192,9 +192,11 @@ public class EditCourseServlet extends HttpServlet {
                 coursesRepository.update(course);
                 
                 // Mettre à jour l'image en base si nécessaire
-                if (newImageUrl != null && imagePart != null && imagePart.getSize() > 0) {
-                    coursesRepository.uploadImageCourse(courseId, newImageUrl);
+                if (newImageUrl != null && imagePart.getSize() > 0 && currentImageUrl != null) {
+                    coursesRepository.updateImageCourse(courseId, newImageUrl, newImageName);
                     System.out.println("Image de course mise à jour: " + newImageUrl);
+                } else if (currentImageUrl == null) {
+                    coursesRepository.uploadImageCourse(courseId, newImageUrl, newImageName);
                 }
                 
                 session.setAttribute("successMessage", "Course '" + course.getNomCourse() + "' modifiée avec succès !");

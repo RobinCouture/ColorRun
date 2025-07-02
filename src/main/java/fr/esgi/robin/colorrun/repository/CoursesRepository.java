@@ -12,6 +12,7 @@ public interface CoursesRepository {
     public int countAll();
     public void update(Courses course);
     public void delete(Courses course);
-    public void uploadImageCourse(Integer idcourse, String imagePath);
+    public void uploadImageCourse(Integer idcourse, String imagePath, String imageNom);
+    public void updateImageCourse(Integer idcourse, String imagePath, String imageNom);
     public String getImagePathById(Integer idcourse);
 }

@@ -206,10 +206,12 @@ public class CreateCourseServlet extends HttpServlet {
             
             // Traitement de l'image
             String imageUrl = null;
+            String imageNom = null;
             Part imagePart = req.getPart("courseImage");
             
             if (imagePart != null && imagePart.getSize() > 0) {
                 imageUrl = handleImageUpload(imagePart, req);
+                imageNom = imagePart.getSubmittedFileName();
                 if (imageUrl == null) {
                     Map<String, Object> variables = new HashMap<>();
                     variables.put("pageTitle", "Créer une course");
@@ -243,7 +245,7 @@ public class CreateCourseServlet extends HttpServlet {
 
             if (imageUrl != null) {
                 // Enregistrer l'image dans la base de données
-                coursesRepository.uploadImageCourse(course.getId(), imageUrl);
+                coursesRepository.uploadImageCourse(course.getId(), imageUrl, imageNom);
                 System.out.println("Image de course enregistrée en base de données: " + imageUrl);
             }
             

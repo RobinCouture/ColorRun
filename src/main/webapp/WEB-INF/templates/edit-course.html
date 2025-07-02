@@ -182,19 +182,13 @@
                             </div>
                             
                             <!-- URL de l'image -->
-                            <div class="form-group">
-                                <label for="imageUrl" class="form-label">
-                                    <i class="fas fa-image me-1"></i>URL de l'image (optionnel)
+                            <div class="mb-3">
+                                <label for="courseImage" class="form-label fw-bold">
+                                    <i class="fas fa-file-image me-2"></i>Choisir une image
                                 </label>
-                                <input type="url" 
-                                       class="form-control" 
-                                       id="imageUrl" 
-                                       name="imageUrl" 
-                                       th:value="${course.imageUrl}"
-                                       placeholder="https://exemple.com/image.jpg">
-                                <small class="form-text text-muted">
-                                    Laissez vide pour utiliser l'image par défaut
-                                </small>
+                                <input type="file" class="form-control" id="courseImage" name="courseImage" accept="image/*"
+                                       th:attr="data-default-image=${currentImageUrl != null ? currentImageUrl : ''}">
+                                <small class="form-text text-muted">Formats acceptés : JPG, PNG, GIF. Taille max : 5 Mo.</small>
                             </div>
                             
                             <!-- Boutons -->
