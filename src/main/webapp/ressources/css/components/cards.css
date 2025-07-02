@@ -1,0 +1,120 @@
+/* Course Cards */
+.course-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+}
+
+.course-card h3 {
+    font-size: 1.2rem;
+    color: var(--accent1);
+    margin-bottom: 0.5rem;
+}
+
+.course-card p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.course-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Feature Cards */
+.feature-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.feature-card img {
+    margin-bottom: 1rem;
+    height: 80px;
+    width: auto;
+    margin: 0 auto 1rem;
+}
+
+.feature-card h3 {
+    color: var(--accent1);
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* Review Cards */
+.review-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+}
+
+.review-text {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+
+.review-author {
+    text-align: right;
+    font-weight: 600;
+    color: var(--accent1);
+}
+
+/* Card Grid Layouts */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 3rem 0;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .course-grid,
+    .features-grid,
+    .reviews-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem 0;
+    }
+    
+    .course-card img {
+        height: 180px;
+    }
+}

@@ -1,0 +1,138 @@
+/* ================================
+   MESSAGES FLOTTANTS GLOBAUX
+   ================================ */
+
+/* Container pour les messages flottants */
+.floating-messages {
+    position: fixed;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 90%;
+    max-width: 600px;
+    pointer-events: none;
+}
+
+/* Styles des alertes */
+.floating-messages .alert {
+    pointer-events: all;
+    margin-bottom: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+    animation: slideInDown 0.5s ease-out;
+}
+
+/* Messages de succès */
+.floating-messages .alert-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+}
+
+/* Messages d'erreur */
+.floating-messages .alert-danger {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    color: white;
+    border: none;
+}
+
+/* Messages d'information */
+.floating-messages .alert-info {
+    background: linear-gradient(135deg, #17a2b8, #007bff);
+    color: white;
+    border: none;
+}
+
+/* Messages d'avertissement */
+.floating-messages .alert-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #212529;
+    border: none;
+}
+
+/* Bouton de fermeture */
+.floating-messages .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+.floating-messages .alert-warning .btn-close {
+    filter: none;
+    opacity: 0.6;
+}
+
+.floating-messages .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Icônes des messages */
+.floating-messages .alert i {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+}
+
+/* Animation d'entrée */
+@keyframes slideInDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Animation de sortie */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+}
+
+/* Auto-hide après 5 secondes */
+.floating-messages .alert.auto-hide {
+    animation: slideInDown 0.5s ease-out, fadeOut 0.5s ease-out 4.5s forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .floating-messages {
+        top: 100px;
+        width: 95%;
+        max-width: 100%;
+        padding: 0 10px;
+    }
+    
+    .floating-messages .alert {
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .floating-messages .alert i {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-messages {
+        top: 90px;
+    }
+    
+    .floating-messages .alert {
+        font-size: 0.85rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: 8px;
+    }
+} 

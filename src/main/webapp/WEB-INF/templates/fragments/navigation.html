@@ -1,0 +1,85 @@
+<nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <!-- LOGO À GAUCHE -->
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <img th:src="@{/ressources/images/logo.png}" alt="ColorRun" class="navbar-logo-img">
+        </a>
+
+        <!-- Bouton mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+            
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- NAVIGATION À GAUCHE -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/contact}">Contact</a>
+                </li>
+                
+                <!-- LIEN DEVENIR ORGANISATEUR - visible pour les participants connectés seulement -->
+                <li class="nav-item" th:if="${session.utilisateur != null and session.utilisateur.roleString == 'participant'}">
+                    <a class="nav-link text-info" th:href="@{/demande-organisateur}">
+                        <i class="fas fa-star me-1"></i>Devenir Organisateur
+                    </a>
+                </li>
+                
+                <!-- LIEN CRÉER COURSE VISIBLE POUR ADMINS ET ORGANISATEURS -->
+                <li class="nav-item" th:if="${session.utilisateur != null and (session.utilisateur.roleString == 'admin' or session.utilisateur.roleString == 'organisateur')}">
+                    <a class="nav-link text-success" th:href="@{/create-course}">
+                        <i class="fas fa-plus-circle me-1"></i>Créer Course
+                    </a>
+                </li>
+                
+                <!-- LIENS ADMIN VISIBLES SEULEMENT SI ADMIN CONNECTÉ -->
+                <li class="nav-item" th:if="${session.utilisateur != null and session.utilisateur.roleString == 'admin'}">
+                    <a class="nav-link text-warning" th:href="@{/admin/roles}">
+                        <i class="fas fa-users-cog me-1"></i>Gestion Rôles
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.utilisateur != null and session.utilisateur.roleString == 'admin'}">
+                    <a class="nav-link text-warning" th:href="@{/admin/demandes-organisateur}">
+                        <i class="fas fa-user-check me-1"></i>Demandes Organisateur
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.utilisateur != null and session.utilisateur.roleString == 'admin'}">
+                    <a class="nav-link text-warning" th:href="@{/admin/demandes-contact}">
+                        <i class="fas fa-envelope me-1"></i>Demandes De Contact
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- AUTHENTIFICATION À DROITE -->
+            <ul class="navbar-nav ms-auto">
+                <!-- SI UTILISATEUR CONNECTÉ -->
+                <li class="nav-item dropdown" th:if="${session.utilisateur != null}">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user me-1"></i>
+                        <span th:text="${session.utilisateur.nomComplet}">Utilisateur</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/profile}">Mon Profil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">Déconnexion</a></li>
+                    </ul>
+                </li>
+                
+                <!-- SI UTILISATEUR NON CONNECTÉ -->
+                <li class="nav-item" th:unless="${session.utilisateur != null}">
+                    <a class="nav-link" th:href="@{/login}">Connexion</a>
+                </li>
+                <li class="nav-item" th:unless="${session.utilisateur != null}">
+                    <a class="nav-link btn-outline-custom" th:href="@{/register}">Inscription</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

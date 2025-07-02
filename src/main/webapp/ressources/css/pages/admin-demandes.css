@@ -1,0 +1,502 @@
+/* ===== ADMIN DEMANDES ORGANISATEUR STYLES ===== */
+
+/* Variables CSS */
+:root {
+    --primary-color: #667eea;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-color: #f8f9fa;
+    --dark-color: #2c3e50;
+    --border-radius: 15px;
+    --transition: all 0.3s ease;
+    --shadow-light: 0 8px 25px rgba(0,0,0,0.1);
+    --shadow-hover: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+/* ===== LAYOUT GÉNÉRAL ===== */
+body.admin-demandes {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Open Sans', sans-serif;
+    min-height: 100vh;
+}
+
+/* ===== HEADER ADMIN ===== */
+.admin-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.admin-title {
+    font-family: 'Fredoka', cursive;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.admin-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+/* ===== STATISTIQUES ===== */
+.stats-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    border-left: 5px solid;
+    height: 100%;
+}
+
+.stats-card.pending {
+    border-left-color: var(--warning-color);
+}
+
+.stats-card.accepted {
+    border-left-color: var(--success-color);
+}
+
+.stats-card.rejected {
+    border-left-color: var(--danger-color);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+/* ===== CARTES DE DEMANDES ===== */
+.admin-content {
+    margin-top: 2rem;
+}
+
+.demande-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+.demande-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%);
+}
+
+.demande-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* ===== HEADER DES DEMANDES ===== */
+.demande-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.demande-user {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.25rem;
+}
+
+.demande-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+.demande-date::before {
+    content: '\f017';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* ===== BADGES DE STATUT ===== */
+.statut-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statut-en-attente {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.statut-en-attente::before {
+    content: '\f017';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.statut-accepte {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #00b894;
+}
+
+.statut-accepte::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.statut-refuse {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #e17055;
+}
+
+.statut-refuse::before {
+    content: '\f00d';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+/* ===== MOTIVATION ===== */
+.motivation-text {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    font-style: italic;
+}
+
+.motivation-text strong {
+    color: var(--dark-color);
+    font-style: normal;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+/* ===== BOUTONS D'ACTION ===== */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* BOUTONS CARRÉS ROUGE/VERT */
+.btn-square {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: var(--transition);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-square::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-square:hover::before {
+    left: 100%;
+}
+
+.btn-square:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.btn-square:active {
+    transform: translateY(-1px);
+}
+
+/* BOUTON ACCEPTER (VERT) */
+.btn-accept {
+    background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+    color: white;
+}
+
+.btn-accept:hover {
+    background: linear-gradient(135deg, #00a085 0%, #008f76 100%);
+    color: white;
+}
+
+.btn-accept:focus {
+    box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.3);
+}
+
+/* BOUTON REFUSER (ROUGE) */
+.btn-reject {
+    background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+    color: white;
+}
+
+.btn-reject:hover {
+    background: linear-gradient(135deg, #d63031 0%, #c0392b 100%);
+    color: white;
+}
+
+.btn-reject:focus {
+    box-shadow: 0 0 0 3px rgba(225, 112, 85, 0.3);
+}
+
+/* BOUTON SUPPRIMER (GRIS) */
+.btn-delete {
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #545b62 0%, #3d4449 100%);
+    color: white;
+}
+
+.btn-delete:focus {
+    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.3);
+}
+
+/* ===== ÉTAT VIDE ===== */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+}
+
+.empty-state i {
+    font-size: 5rem;
+    color: #ddd;
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.empty-state h3 {
+    font-family: 'Fredoka', cursive;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+/* ===== MESSAGES FLOTTANTS ===== */
+.floating-messages {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 400px;
+}
+
+.floating-messages .alert {
+    margin-bottom: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    animation: slideInRight 0.5s ease-out;
+    border: none;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.auto-dismiss {
+    animation: slideInRight 0.5s ease-out, fadeOut 0.5s ease-in 4.5s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .admin-title {
+        font-size: 2rem;
+    }
+    
+    .demande-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .btn-square {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+    }
+    
+    .demande-card {
+        padding: 1.5rem;
+    }
+    
+    .floating-messages {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-header {
+        padding: 2rem 0;
+    }
+    
+    .admin-title {
+        font-size: 1.8rem;
+    }
+    
+    .admin-subtitle {
+        font-size: 1rem;
+    }
+    
+    .stats-card {
+        padding: 1.5rem;
+    }
+    
+    .demande-user {
+        font-size: 1.1rem;
+    }
+    
+    .motivation-text {
+        padding: 1rem;
+    }
+}
+
+/* ===== ANIMATIONS SUPPLÉMENTAIRES ===== */
+.demande-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.demande-card:nth-child(odd) {
+    animation-delay: 0.1s;
+}
+
+.demande-card:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Effet de survol sur les cartes */
+.demande-card:hover .motivation-text {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-left-color: var(--success-color);
+}
+
+/* Effet de pulsation pour les boutons en attente */
+.statut-en-attente {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+} 

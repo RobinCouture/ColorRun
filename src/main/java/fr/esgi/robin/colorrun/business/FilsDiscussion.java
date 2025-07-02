@@ -3,18 +3,23 @@ package fr.esgi.robin.colorrun.business;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "FILSDISCUSSION")
-public class Filsdiscussion {
+public class FilsDiscussion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_MESSAGE", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_COURSE")
-    private Courses idCourse;
+    private Courses course;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_UTILISATEUR")
+    private Utilisateur utilisateur;
 
     @Lob
     @Column(name = "CONTENU", nullable = false)
@@ -22,6 +27,20 @@ public class Filsdiscussion {
 
     @Column(name = "DATE_ENVOI")
     private Instant dateEnvoi;
+
+    public FilsDiscussion() {
+    }
+
+    public FilsDiscussion(Integer id, Courses course, Utilisateur utilisateur, String contenu, Instant dateEnvoi) {
+        this.id = id;
+        this.course = course;
+        this.utilisateur = utilisateur;
+        this.contenu = contenu;
+        this.dateEnvoi = dateEnvoi;
+    }
+
+    public FilsDiscussion(Integer id, String content, Date date, Utilisateur user, Courses courses) {
+    }
 
     public Integer getId() {
         return id;
@@ -31,12 +50,20 @@ public class Filsdiscussion {
         this.id = id;
     }
 
-    public Courses getIdCourse() {
-        return idCourse;
+    public Courses getCourse() {
+        return course;
     }
 
-    public void setIdCourse(Courses idCourse) {
-        this.idCourse = idCourse;
+    public void setCourse(Courses course) {
+        this.course = course;
+    }
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public String getContenu() {

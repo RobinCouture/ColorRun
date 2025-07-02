@@ -1,0 +1,249 @@
+/* ================================
+   FOOTER COMPONENT
+   ================================ */
+.footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 3rem 0 1rem;
+    margin-top: auto;
+}
+
+/* ================================
+   FOOTER LOGO ET BRANDING
+   ================================ */
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.footer-logo-img {
+    height: 4rem;
+    width: auto;
+    object-fit: contain;
+}
+
+.footer-brand-text {
+    font-family: 'Fredoka', cursive;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+}
+
+.footer-brand-text:hover {
+    color: #ff4081;
+    text-decoration: none;
+}
+
+.footer h5 {
+    color: #ff4081;
+    font-family: 'Fredoka', cursive;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.footer p, 
+.footer a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #ff4081;
+}
+
+.footer .social-icons a {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 45px;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    color: rgba(255,255,255,0.8);
+    font-size: 1.1rem;
+}
+
+.footer .social-icons a:hover {
+    background: #ff4081;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
+}
+
+.footer hr {
+    border-color: rgba(255,255,255,0.2);
+    margin: 2rem 0 1rem;
+}
+
+/* Footer content layout */
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+    font-family: 'Fredoka', cursive;
+    margin-bottom: 1rem;
+    color: #ff4081;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-section a:hover {
+    color: #ff4081;
+    transform: translateX(5px);
+}
+
+.footer-section i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Footer bottom */
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1.5rem;
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+}
+
+/* Social media specific styling */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Newsletter signup styling */
+.newsletter-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    placeholder-color: rgba(255,255,255,0.6);
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+.newsletter-form button {
+    background: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.newsletter-form button:hover {
+    background: #e91e63;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 64, 129, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem 0 1rem;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+    
+    .social-icons a {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .newsletter-form input {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .newsletter-form button {
+        width: auto;
+        padding: 0.5rem 2rem;
+    }
+    
+    .footer-logo-img {
+        height: 3rem;
+    }
+    
+    .footer-brand-text {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-section h4 {
+        font-size: 1.2rem;
+    }
+    
+    .social-icons a {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+    }
+    
+    .footer-logo-img {
+        height: 2.5rem;
+    }
+    
+    .footer-brand-text {
+        font-size: 1.6rem;
+    }
+} 

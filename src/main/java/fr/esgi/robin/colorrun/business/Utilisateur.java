@@ -26,8 +26,18 @@ public class Utilisateur {
 
     @Column(name = "PHOTO_PROFIL")
     private String photoProfil;
+
     @Column(name = "DATE_INSCRIPTION")
     private Instant dateInscription;
+
+    @Column(name = "ROLE")
+    private String roleString = "participant";
+
+    @Column(name = "RESET_TOKEN")
+    private String resetToken;
+
+    @Column(name = "RESET_TOKEN_EXPIRATION")
+    private Instant resetTokenExpiration;
 
     public Utilisateur() {
     }
@@ -40,6 +50,7 @@ public class Utilisateur {
         this.motDePasse = motDePasse;
         this.photoProfil = photoProfil;
         this.dateInscription = dateInscription;
+        this.roleString = "participant";
     }
 
     public Integer getId() {
@@ -96,6 +107,54 @@ public class Utilisateur {
 
     public void setDateInscription(Instant dateInscription) {
         this.dateInscription = dateInscription;
+    }
+
+    public String getRoleString() {
+        return roleString;
+    }
+
+    public void setRoleString(String roleString) {
+        this.roleString = roleString;
+    }
+
+    public Role getRole() {
+        return Role.fromString(this.roleString);
+    }
+
+    public void setRole(Role role) {
+        this.roleString = role.getValue();
+    }
+
+    public boolean isAdmin() {
+        return "admin".equalsIgnoreCase(this.roleString);
+    }
+
+    public boolean isOrganisateur() {
+        return "organisateur".equalsIgnoreCase(this.roleString);
+    }
+
+    public boolean canCreateCourse() {
+        return isAdmin() || isOrganisateur();
+    }
+
+    public String getNomComplet() {
+        return this.prenom + " " + this.nom;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Instant getResetTokenExpiration() {
+        return resetTokenExpiration;
+    }
+
+    public void setResetTokenExpiration(Instant resetTokenExpiration) {
+        this.resetTokenExpiration = resetTokenExpiration;
     }
 
 /*

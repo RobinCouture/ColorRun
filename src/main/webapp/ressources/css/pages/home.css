@@ -1,0 +1,316 @@
+/* ================================
+   PAGE D'ACCUEIL - STYLES SPÉCIFIQUES
+   ================================ */
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #ff4081, #ff6b35, #f7931e, #ffd23f);
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 60px 0;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 64, 129, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.3) 0%, transparent 50%);
+}
+
+.hero-content {
+    text-align: center;
+    color: white;
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-family: 'Fredoka', cursive;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+/* ================================
+   BOUTON DÉCOUVRIR LES COURSES
+   ================================ */
+.btn-secondary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    padding: 1rem 2.5rem !important;
+    border-radius: 50px !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6) !important;
+    color: white !important;
+}
+
+.btn-secondary:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+.btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-secondary:hover::before {
+    left: 100%;
+}
+
+/* Section caractéristiques */
+.features {
+    padding: 4rem 0;
+    background: white;
+}
+
+.section-title {
+    text-align: center;
+    font-family: 'Fredoka', cursive;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e1e5e9;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-color: #667eea;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+    display: block;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.feature-title {
+    font-family: 'Fredoka', cursive;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Section événements à venir */
+.upcoming-events {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+.event-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.event-content {
+    padding: 2rem;
+}
+
+.event-date {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff4081, #e91e63);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.event-title {
+    font-family: 'Fredoka', cursive;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.event-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.event-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.event-location i {
+    color: #ff4081;
+}
+
+.event-footer {
+    text-align: center;
+}
+
+/* Section aucun événement */
+.no-events {
+    text-align: center;
+    padding: 4rem;
+    color: #666;
+}
+
+.no-events i {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.no-events h3 {
+    font-family: 'Fredoka', cursive;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.no-events p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .feature-card {
+        margin-bottom: 2rem;
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+
+    .event-content {
+        padding: 1.5rem;
+    }
+    
+    .btn-secondary {
+        padding: 0.8rem 2rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        min-height: 60vh;
+        padding: 40px 0;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .features,
+    .upcoming-events {
+        padding: 3rem 0;
+    }
+
+    .feature-card,
+    .event-card {
+        margin-bottom: 1.5rem;
+    }
+}

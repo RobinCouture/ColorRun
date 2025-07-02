@@ -1,59 +1,64 @@
 package fr.esgi.robin.colorrun;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import fr.esgi.robin.colorrun.business.Courses;
+import fr.esgi.robin.colorrun.repository.CoursesRepository;
+import fr.esgi.robin.colorrun.repository.impl.CoursesRepositoryImpl;
+import fr.esgi.robin.colorrun.util.TemplateUtil;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import fr.esgi.robin.colorrun.business.Utilisateur;
-import fr.esgi.robin.colorrun.database.DatabaseConfig;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
-
-@WebServlet(name = "helloServlet", value = "/hello-servlet")
+@WebServlet(name = "helloServlet", urlPatterns = { "", "/" })
 public class HelloServlet extends HttpServlet {
-    private String message;
 
-    public void init() {
-        message = "Hello World!";
+    private CoursesRepository coursesRepository;
+    private static final int MAX_COURSES_HOME = 3; // Limite pour la page d'accueil
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        this.coursesRepository = new CoursesRepositoryImpl();
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
-
-        // Hello
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>" + message + "</h1>");
-
-        System.setProperty("jdbc.drivers", "org.h2.Driver");
-
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            out.println("<h1> connexion réussi </h1>");
-            Object obj = conn.prepareStatement("SELECT * FROM UTILISATEURS").executeQuery();
-            ResultSet rs = (ResultSet) obj;
-            out.println("<h1> liste des utilisateurs </h1>");
-            out.println("<table border='1'>");
-            out.println("<tr><th>id</th><th>nom</th><th>prenom</th><th>email</th><th>mot de passe</th></tr>");
-
-            while (rs.next()) {
-                out.println("<tr>");
-                out.println("<td>" + rs.getInt("ID_UTILISATEUR") + "</td>");
-                out.println("<td>" + rs.getString("NOM") + "</td>");
-                out.println("<td>" + rs.getString("PRENOM") + "</td>");
-                out.println("<td>" + rs.getString("EMAIL") + "</td>");
-                out.println("<td>" + rs.getString("MOT_DE_PASSE") + "</td>");
-                out.println("</tr>");
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            System.out.println("🚀 HelloServlet démarré"); // DEBUG
+            
+            // Récupérer seulement les 3 premières courses pour la page d'accueil
+            List<Courses> upcomingCourses = coursesRepository.findAllPaginated(0, MAX_COURSES_HOME);
+            if (upcomingCourses == null) {
+                upcomingCourses = new ArrayList<>();
             }
-        } catch (SQLException e) {
-            out.println("<h1> connexion échoué </h1>");
-            out.println("<p>" + e.getMessage() + "</p>");
+
+            System.out.println("📈 Nombre de courses récupérées pour la page d'accueil: " + upcomingCourses.size()); // DEBUG
+            
+            // Affichage des courses pour debug
+            for (Courses course : upcomingCourses) {
+                System.out.println("🏃 Course: " + course.getNomCourse() + " - " + course.getLieu());
+            }
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("upcomingCourses", upcomingCourses);
+
+            System.out.println("🎨 Rendu du template home avec " + upcomingCourses.size() + " courses"); // DEBUG
+            
+            TemplateUtil.processTemplate("home", request, response, model);
+        } catch (Exception e) {
+            System.out.println("❌ Erreur dans HelloServlet: " + e.getMessage()); // DEBUG
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Une erreur est survenue : " + e.getMessage());
         }
-
-        out.println("</body></html>");
-
-
     }
 
     public void destroy() {

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - ColorRun</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS externe -->
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/courses.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/floating-messages.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+
+    <!-- Messages flottants -->
+    <div class="floating-messages">
+        <div th:if="${session.successMessage}" class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${session.successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${session.errorMessage}" class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${session.errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="courses-header">
+        <div class="container">
+            <h1 class="courses-title">DÉCOUVREZ NOS COURSES COLORÉES</h1>
+            <p class="courses-subtitle">Trouvez la course parfaite près de chez vous et vivez une expérience inoubliable</p>
+        </div>
+    </header>
+
+    <!-- Search and Filters -->
+    <section class="search-section">
+        <div class="container">
+            <form class="search-form" method="GET" action="/ColorRun/courses">
+                <input type="text" 
+                       class="filter-input" 
+                       name="search"
+                       th:value="${searchQuery}"
+                       placeholder="Rechercher une course...">
+                       
+                <input type="text" 
+                       class="filter-input" 
+                       name="villeFilter"
+                       th:value="${selectedVille}"
+                       placeholder="Ville (ex: Lyon)">
+                
+                <input type="number" 
+                       class="filter-input" 
+                       name="distanceFilter"
+                       th:value="${selectedDistance}"
+                       placeholder="Distance max (km)"
+                       min="1" 
+                       step="0.1">
+                
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <main>
+        <!-- Courses Grid -->
+        <section class="courses-grid-section">
+            <div class="container">
+                <div class="courses-grid" id="courses-grid">
+                    <div th:each="course : ${courses}" class="course-item">
+                        <!-- Image de la course (côté gauche) -->
+                        <div class="course-map">
+                            <div class="course-image-mini" th:if="${courseImages.get(course.id) != null and !courseImages.get(course.id).isEmpty()}">
+                                <img th:src="${courseImages.get(course.id)}" 
+                                     th:alt="${course.nomCourse}" 
+                                     class="course-thumbnail">
+                            </div>
+                            <div class="map-placeholder" th:if="${courseImages.get(course.id) == null or courseImages.get(course.id).isEmpty()}">
+                                <i class="fas fa-image"></i>
+                                <span>Image course</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Informations de la course (côté droit) -->
+                        <div class="course-info">
+                            <div class="course-header">
+                                <h3 class="course-name" th:text="${course.nomCourse}">ColorRun Paris</h3>
+                                <span class="course-date" th:text="${#temporals.format(course.dateHeure, 'dd MMMM yyyy')}">15 juin 2024</span>
+                            </div>
+                            
+                            <div class="course-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span th:text="${course.lieu}">Paris, France</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-route"></i>
+                                    <span th:text="${course.distance} + ' km'">5 km</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-euro-sign"></i>
+                                    <span th:text="${course.prix} + ' €'">25 €</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-users"></i>
+                                    <span th:text="${course.nbMaxParticipants} + ' participants max'">500 participants max</span>
+                                </div>
+                            </div>
+                            
+                            <p class="course-description" th:text="${course.description}">
+                                Information importante de la course. Venez découvrir cette expérience unique...
+                            </p>
+                            
+                            <!-- Actions: En savoir plus + Boutons admin -->
+                            <div class="course-actions">
+                                <a th:href="@{'/course/' + ${course.id}}" class="course-btn">En savoir plus</a>
+                                
+                                <!-- Boutons d'administration (organisateur/admin seulement) -->
+                                <div th:if="${utilisateurConnecte != null and (utilisateurConnecte.admin or utilisateurConnecte.roleString == 'organisateur')}" class="admin-buttons">
+                                    <a th:href="@{/edit-course/{id}(id=${course.id})}" class="admin-btn admin-btn-edit">
+                                        <i class="fas fa-edit"></i>Modifier
+                                    </a>
+                                    <button type="button" class="admin-btn admin-btn-delete" 
+                                            data-bs-toggle="modal" 
+                                            th:data-bs-target="'#deleteModal' + ${course.id}"
+                                            th:data-course-name="${course.nomCourse}">
+                                        <i class="fas fa-trash"></i>Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modals de suppression -->
+                    <div th:each="course : ${courses}" 
+                         th:if="${utilisateurConnecte != null and (utilisateurConnecte.admin or utilisateurConnecte.roleString == 'organisateur')}"
+                         class="modal fade" 
+                         th:id="'deleteModal' + ${course.id}" 
+                         tabindex="-1" 
+                         th:aria-labelledby="'deleteModalLabel' + ${course.id}" 
+                         aria-hidden="true">
+                        
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" th:id="'deleteModalLabel' + ${course.id}">Confirmer la suppression</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Êtes-vous sûr de vouloir supprimer la course <strong th:text="${course.nomCourse}">Course</strong> ?</p>
+                                    <p class="text-danger"><small><i class="fas fa-exclamation-triangle me-1"></i>Cette action est irréversible et supprimera également tous les messages associés.</small></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <form th:action="@{/course/{id}(id=${course.id})}" method="post" style="display: inline;">
+                                        <input type="hidden" name="action" value="deleteCourse">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash me-1"></i>Supprimer définitivement
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="pagination-section">
+                    <nav aria-label="Navigation des pages">
+                        <ul class="pagination">
+                            <!-- Pages numériques avec filtres préservés -->
+                            <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}" 
+                                class="page-item" 
+                                th:classappend="${pageNum == currentPage ? 'active' : ''}">
+                                <a class="page-link" 
+                                   th:href="@{/courses(page=${pageNum}, search=${param.search}, villeFilter=${param.villeFilter}, distanceFilter=${param.distanceFilter}, dateFilter=${param.dateFilter})}"
+                                   th:text="${pageNum}">1</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    
+                    <!-- Informations sur la pagination -->
+                    <div class="pagination-info">
+                        <small class="text-muted">
+                            Page <strong th:text="${currentPage}">1</strong> sur <strong th:text="${totalPages}">2</strong>
+                            (<strong th:text="${totalCourses}">4</strong> courses au total)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Si aucune course -->
+                <div th:if="${courses == null or courses.isEmpty()}" class="no-courses">
+                    <i class="fas fa-running"></i>
+                    <h3>Aucune course trouvée</h3>
+                    <p>Modifiez vos critères de recherche ou consultez toutes les courses disponibles.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section">
+            <div class="container">
+                <h2 class="cta-title">PARTICIPEZ À LA PROCHAINE AVENTURE COLORÉE PRÈS DE CHEZ VOUS !</h2>
+            </div>
+        </section>
+
+        <!-- Avis des coureurs -->
+        <section class="reviews-section">
+            <div class="container">
+                <h2 class="reviews-title">AVIS DES COUREURS</h2>
+                <div class="reviews-grid">
+                    <div class="review-card">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"Une expérience magique ! Les couleurs, l'ambiance, tout était parfait. Je recommande vivement !"</p>
+                        <div class="review-author">
+                            <strong>Marie L.</strong>
+                            <span>ColorRun Paris 2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="review-card">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"Organisé à la perfection ! Une course fun et familiale. Mes enfants ont adoré."</p>
+                        <div class="review-author">
+                            <strong>Thomas D.</strong>
+                            <span>ColorRun Lyon 2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="review-card">
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"Superbe organisation et une ambiance de folie ! J'y retournerai sans hésiter."</p>
+                        <div class="review-author">
+                            <strong>Sophie M.</strong>
+                            <span>ColorRun Marseille 2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/ressources/js/floating-messages.js}"></script>
+    
+    <!-- JavaScript pour les filtres -->
+    <script>
+        // Suppression du code de filtre des prix
+        function applyFilters() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const selectedLocation = document.getElementById('locationFilter').value;
+            const selectedDistance = document.getElementById('distanceFilter').value;
+            
+            const courseItems = document.querySelectorAll('.course-item');
+            
+            courseItems.forEach(item => {
+                const courseName = item.querySelector('.course-name').textContent.toLowerCase();
+                const courseLocation = item.querySelector('.detail-item .fas.fa-map-marker-alt').nextElementSibling.textContent;
+                const courseDistanceText = item.querySelector('.detail-item .fas.fa-route').nextElementSibling.textContent;
+                const courseDistance = parseFloat(courseDistanceText.replace(' km', ''));
+                
+                let showItem = true;
+                
+                // Filtre texte
+                if (searchText && !courseName.includes(searchText)) {
+                    showItem = false;
+                }
+                
+                // Filtre localisation
+                if (selectedLocation && !courseLocation.includes(selectedLocation)) {
+                    showItem = false;
+                }
+                
+                // Filtre distance
+                if (selectedDistance) {
+                    const distanceFilter = parseInt(selectedDistance);
+                    if (distanceFilter === 15 && courseDistance < 15) {
+                        showItem = false;
+                    } else if (distanceFilter !== 15 && courseDistance !== distanceFilter) {
+                        showItem = false;
+                    }
+                }
+                
+                item.style.display = showItem ? 'flex' : 'none';
+            });
+        }
+        
+        // Populate location filter
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationFilter = document.getElementById('locationFilter');
+            const locations = new Set();
+            
+            document.querySelectorAll('.course-item').forEach(item => {
+                const location = item.querySelector('.detail-item .fas.fa-map-marker-alt').nextElementSibling.textContent;
+                locations.add(location);
+            });
+            
+            locations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationFilter.appendChild(option);
+            });
+        });
+    </script>
+</body>
+</html>

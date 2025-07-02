@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - ColorRun</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/ressources/css/main.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/pages/contact.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/navigation.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/layouts/footer.css}">
+    <link rel="stylesheet" th:href="@{/ressources/css/components/buttons.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+    
+    <!-- Messages d'alerte -->
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${errorMessage}">Message d'erreur</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="container contact-container">
+        <!-- En-tête -->
+        <div class="contact-header">
+            <h1 class="display-4 fw-bold mb-3">Contactez-nous</h1>
+            <p class="lead text-muted">
+                Vous avez une question, une suggestion ou besoin d'aide ? 
+                Notre équipe est là pour vous accompagner dans votre aventure ColorRun !
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Informations de contact -->
+            <div class="col-lg-4">
+                <div class="contact-info-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Informations
+                    </h3>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Email</h5>
+                            <p class="mb-0">contact@colorrun.fr</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Horaires</h5>
+                            <p class="mb-0">Lun - Ven: 9h00 - 18h00<br>Sam: 10h00 - 16h00</p>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4 contact-divider">
+                    
+                    <h5 class="mb-3">Suivez-nous</h5>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulaire de contact -->
+            <div class="col-lg-8">
+                <div class="contact-form-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-paper-plane me-2 text-primary"></i>
+                        Envoyez-nous un message
+                    </h3>
+                    
+                    <form method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="nom" 
+                                           name="nom" 
+                                           th:value="${nom}"
+                                           placeholder="Votre nom" 
+                                           required>
+                                    <label for="nom">Nom complet *</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           name="email" 
+                                           th:value="${email}"
+                                           placeholder="votre@email.com" 
+                                           required>
+                                    <label for="email">Adresse email *</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <select class="form-select" id="sujet" name="sujet" required>
+                                        <option value="">Choisissez un sujet</option>
+                                        <option value="Question générale" th:selected="${sujet == 'Question générale'}">Question générale</option>
+                                        <option value="Inscription à une course" th:selected="${sujet == 'Inscription à une course'}">Inscription à une course</option>
+                                        <option value="Problème technique" th:selected="${sujet == 'Problème technique'}">Problème technique</option>
+                                        <option value="Devenir organisateur" th:selected="${sujet == 'Devenir organisateur'}">Devenir organisateur</option>
+                                        <option value="Partenariat" th:selected="${sujet == 'Partenariat'}">Partenariat</option>
+                                        <option value="Autre" th:selected="${sujet == 'Autre'}">Autre</option>
+                                    </select>
+                                    <label for="sujet">Sujet *</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control message-textarea" 
+                                              id="message" 
+                                              name="message" 
+                                              placeholder="Votre message"
+                                              required th:text="${message}"></textarea>
+                                    <label for="message">Votre message *</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="contact-form-footer">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Les champs marqués d'un * sont obligatoires
+                                    </small>
+                                    <button type="submit" class="btn btn-send">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        Envoyer le message
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Supprimer les messages d'alerte après 5 secondes
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                if (alert.classList.contains('show')) {
+                    alert.classList.remove('show');
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 150);
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html> 
