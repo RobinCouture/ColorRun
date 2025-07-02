@@ -32,8 +32,7 @@ public class ResetPasswordServlet extends HttpServlet {
         // Vérifier si le token existe et est encore valide
         Utilisateur utilisateur = utilisateurRepository.findByResetToken(token);
         
-        if (utilisateur == null || utilisateur.getResetTokenExpiration() == null || 
-            utilisateur.getResetTokenExpiration().isBefore(Instant.now())) {
+        if (utilisateur == null || utilisateurRepository.getResetTokenExpiration(token).isBefore(Instant.now())) {
             TemplateUtil.processTemplate("login", req, resp, 
                 Map.of("errorMessage", "Token de réinitialisation expiré ou invalide"));
             return;
@@ -71,8 +70,7 @@ public class ResetPasswordServlet extends HttpServlet {
         try {
             Utilisateur utilisateur = utilisateurRepository.findByResetToken(token);
             
-            if (utilisateur == null || utilisateur.getResetTokenExpiration() == null || 
-                utilisateur.getResetTokenExpiration().isBefore(Instant.now())) {
+            if (utilisateur == null || utilisateurRepository.getResetTokenExpiration(token).isBefore(Instant.now())) {
                 TemplateUtil.processTemplate("login", req, resp, 
                     Map.of("errorMessage", "Token expiré ou invalide"));
                 return;
@@ -81,8 +79,7 @@ public class ResetPasswordServlet extends HttpServlet {
             // Mettre à jour le mot de passe
             String hashedPassword = PasswordUtils.hashPassword(newPassword);
             utilisateur.setMotDePasse(hashedPassword);
-            utilisateur.setResetToken(null);
-            utilisateur.setResetTokenExpiration(null);
+            utilisateurRepository.deleteResetToken(token);
             
             utilisateurRepository.update(utilisateur);
 

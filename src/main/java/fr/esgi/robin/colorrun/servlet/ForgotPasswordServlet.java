@@ -45,9 +45,7 @@ public class ForgotPasswordServlet extends HttpServlet {
                 Instant expirationTime = Instant.now().plus(1, ChronoUnit.HOURS);
                 
                 // Sauvegarder le token et sa date d'expiration
-                utilisateur.setResetToken(resetToken);
-                utilisateur.setResetTokenExpiration(expirationTime);
-                utilisateurRepository.update(utilisateur);
+                utilisateurRepository.saveResetToken(utilisateur, resetToken, expirationTime);
                 
                 // Construire l'URL de réinitialisation
                 String resetUrl = req.getScheme() + "://" + req.getServerName() + 

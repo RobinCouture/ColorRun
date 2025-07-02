@@ -40,13 +40,13 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Utilisateur utilisateur = new Utilisateur(
-                    rs.getInt("ID_UTILISATEUR"),
-                    rs.getString("NOM"),
-                    rs.getString("PRENOM"),
-                    rs.getString("EMAIL"),
-                    rs.getString("MOT_DE_PASSE"),
-                    rs.getString("PHOTO_PROFIL"),
-                    rs.getObject("DATE_INSCRIPTION", Instant.class)
+                        rs.getInt("ID_UTILISATEUR"),
+                        rs.getString("NOM"),
+                        rs.getString("PRENOM"),
+                        rs.getString("EMAIL"),
+                        rs.getString("MOT_DE_PASSE"),
+                        rs.getString("PHOTO_PROFIL"),
+                        rs.getObject("DATE_INSCRIPTION", Instant.class)
                 );
                 utilisateur.setRoleString(rs.getString("ROLE"));
                 return utilisateur;
@@ -66,13 +66,13 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Utilisateur utilisateur = new Utilisateur(
-                    rs.getInt("ID_UTILISATEUR"),
-                    rs.getString("NOM"),
-                    rs.getString("PRENOM"),
-                    rs.getString("EMAIL"),
-                    rs.getString("MOT_DE_PASSE"),
-                    rs.getString("PHOTO_PROFIL"),
-                    rs.getObject("DATE_INSCRIPTION", Instant.class)
+                        rs.getInt("ID_UTILISATEUR"),
+                        rs.getString("NOM"),
+                        rs.getString("PRENOM"),
+                        rs.getString("EMAIL"),
+                        rs.getString("MOT_DE_PASSE"),
+                        rs.getString("PHOTO_PROFIL"),
+                        rs.getObject("DATE_INSCRIPTION", Instant.class)
                 );
                 utilisateur.setRoleString(rs.getString("ROLE"));
                 utilisateurs.add(utilisateur);
@@ -144,34 +144,34 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
     public List<Utilisateur> findAllPaginated(int offset, int limit) {
         List<Utilisateur> utilisateurs = new ArrayList<>();
         String query = "SELECT * FROM UTILISATEURS ORDER BY DATE_INSCRIPTION DESC LIMIT ? OFFSET ?";
-        
+
         System.out.println("🔍 Requête SQL: " + query);
         System.out.println("📊 Paramètres: limit=" + limit + ", offset=" + offset);
-        
+
         try (Connection conn = DatabaseConfig.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, limit);
             stmt.setInt(2, offset);
-            
+
             ResultSet rs = stmt.executeQuery();
             int count = 0;
             while (rs.next()) {
                 count++;
                 Utilisateur utilisateur = new Utilisateur(
-                    rs.getInt("ID_UTILISATEUR"),
-                    rs.getString("NOM"),
-                    rs.getString("PRENOM"),
-                    rs.getString("EMAIL"),
-                    rs.getString("MOT_DE_PASSE"),
-                    rs.getString("PHOTO_PROFIL"),
-                    rs.getObject("DATE_INSCRIPTION", Instant.class)
+                        rs.getInt("ID_UTILISATEUR"),
+                        rs.getString("NOM"),
+                        rs.getString("PRENOM"),
+                        rs.getString("EMAIL"),
+                        rs.getString("MOT_DE_PASSE"),
+                        rs.getString("PHOTO_PROFIL"),
+                        rs.getObject("DATE_INSCRIPTION", Instant.class)
                 );
                 utilisateur.setRoleString(rs.getString("ROLE"));
                 utilisateurs.add(utilisateur);
                 System.out.println("👤 Utilisateur trouvé: " + utilisateur.getEmail() + " (" + utilisateur.getRoleString() + ")");
             }
             System.out.println("✅ Total utilisateurs récupérés: " + count);
-            
+
         } catch (SQLException e) {
             System.err.println("❌ Erreur lors de la récupération paginée des utilisateurs: " + e.getMessage());
             e.printStackTrace();
@@ -183,7 +183,7 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
     public int countAll() {
         String query = "SELECT COUNT(*) FROM UTILISATEURS";
         System.out.println("🔍 Comptage des utilisateurs...");
-        
+
         try (Connection conn = DatabaseConfig.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
@@ -200,28 +200,73 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
     }
 
     @Override
-public Utilisateur findByResetToken(String resetToken) {
-    String query = "SELECT * FROM UTILISATEURS WHERE RESET_TOKEN = ?";
-    try (Connection conn = DatabaseConfig.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query)) {
-        stmt.setString(1, resetToken);
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            Utilisateur utilisateur = new Utilisateur(
-                rs.getInt("ID_UTILISATEUR"),
-                rs.getString("NOM"),
-                rs.getString("PRENOM"),
-                rs.getString("EMAIL"),
-                rs.getString("MOT_DE_PASSE"),
-                rs.getString("PHOTO_PROFIL"),
-                rs.getObject("DATE_INSCRIPTION", Instant.class)
-            );
-            utilisateur.setRoleString(rs.getString("ROLE"));
-            return utilisateur;
+    public Utilisateur findByResetToken(String resetToken) {
+        String query = "SELECT * FROM TOKENCHANGEPASSWORD WHERE TOKEN = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, resetToken);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Utilisateur utilisateur = findById(rs.getInt("IDUTILISATEUR"));
+                return utilisateur;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return null;
     }
-    return null;
-}
+
+    @Override
+    public void saveResetToken(Utilisateur utilisateur, String resetToken, Instant expirationTime) {
+        String query = "INSERT INTO TOKENCHANGEPASSWORD (IDUTILISATEUR, TOKEN, DATE_EXPIRATION) VALUES (?, ?, ?)";
+
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, utilisateur.getId());
+            stmt.setString(2, resetToken);
+            stmt.setObject(3, expirationTime);
+            stmt.executeUpdate();
+            System.out.println("✅ Token de réinitialisation sauvegardé pour l'utilisateur: " + utilisateur.getEmail());
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de la sauvegarde du token de réinitialisation: " + e.getMessage());
+            e.printStackTrace();
+
+        }
+    }
+
+    public Instant getResetTokenExpiration(String token) {
+        String query = "SELECT DATE_EXPIRATION FROM TOKENCHANGEPASSWORD WHERE TOKEN = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, token);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getObject("DATE_EXPIRATION", Instant.class);
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de la récupération de l'expiration du token: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void deleteResetToken(String resetToken) {
+        String query = "DELETE FROM TOKENCHANGEPASSWORD WHERE TOKEN = ?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, resetToken);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("✅ Token de réinitialisation supprimé: " + resetToken);
+            } else {
+                System.out.println("❌ Aucun token trouvé pour suppression: " + resetToken);
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de la suppression du token de réinitialisation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,67 +1,90 @@
 package fr.esgi.robin.colorrun.util;
 
-import jakarta.mail.*;
-import jakarta.mail.internet.*;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.*;
+import com.sendgrid.helpers.mail.objects.*;
+import java.io.IOException;
 import java.util.Properties;
 
 public class EmailUtil {
-    
-    // Configuration Gmail (exemple)
-    private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
-    private static final String EMAIL_FROM = "colorrun@gmail.com";
-    private static final String EMAIL_PASSWORD = "colorrun2025";
-    
+
+    private static final String SENDGRID_API_KEY;
+    private static final String EMAIL_FROM;
+    private static final String FROM_NAME;
+
+    static {
+        Properties props = new Properties();
+        try {
+            props.load(EmailUtil.class.getClassLoader().getResourceAsStream("mail.properties"));
+            SENDGRID_API_KEY = props.getProperty("sendgrid.api-key");
+            EMAIL_FROM = "colorrun@outlook.fr";
+            FROM_NAME = "ColorRun";
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load mail properties", e);
+        }
+    }
+    String recoverysendgrid = "XSU6GH29U6ZDGAHUJE7QTTLH";
+
     /**
-     * Envoie un vrai email de réinitialisation de mot de passe
+     * Sends a password reset email to the user
      */
     public static boolean sendPasswordResetEmail(String email, String resetUrl, String prenom) {
-        // Mode simulation amélioré
-        System.out.println("📧 [SIMULATION] Email de réinitialisation");
-        System.out.println("📧 Pour : " + email);
-        System.out.println("📧 Lien : " + resetUrl);
-        System.out.println("📧 COPIEZ CE LIEN dans votre navigateur pour tester :");
-        System.out.println("📧 " + resetUrl);
-        
-        return true; // Simuler le succès
+        try {
+            Email from = new Email(EMAIL_FROM, FROM_NAME);
+            Email to = new Email(email);
+            String subject = "Réinitialisation de votre mot de passe ColorRun";
+            String emailContent = createPasswordResetEmailTemplate(prenom, resetUrl);
+            Content content = new Content("text/html", emailContent);
+
+            Mail mail = new Mail(from, subject, to, content);
+
+            return sendWithSendGrid(mail);
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'envoi de l'email: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
-    
+
     private static String createPasswordResetEmailTemplate(String prenom, String resetUrl) {
         return "<!DOCTYPE html>" +
-            "<html>" +
-            "<head>" +
-            "<meta charset=\"UTF-8\">" +
-            "<style>" +
-            "body { font-family: Arial, sans-serif; line-height: 1.6; }" +
-            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
-            ".header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }" +
-            ".content { background: #f8f9fa; padding: 30px; }" +
-            ".button { display: inline-block; background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }" +
-            ".footer { text-align: center; color: #6c757d; font-size: 12px; }" +
-            "</style>" +
-            "</head>" +
-            "<body>" +
-            "<div class=\"container\">" +
-            "<div class=\"header\">" +
-            "<h1>🏃‍♀️ ColorRun</h1>" +
-            "<p>Réinitialisation de mot de passe</p>" +
-            "</div>" +
-            "<div class=\"content\">" +
-            "<h2>Bonjour " + prenom + ",</h2>" +
-            "<p>Vous avez demandé la réinitialisation de votre mot de passe ColorRun.</p>" +
-            "<p>Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>" +
-            "<a href=\"" + resetUrl + "\" class=\"button\">Réinitialiser mon mot de passe</a>" +
-            "<p><strong>⏰ Ce lien expire dans 1 heure.</strong></p>" +
-            "<p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>" +
-            "</div>" +
-            "<div class=\"footer\">" +
-            "<p>L'équipe ColorRun</p>" +
-            "</div>" +
-            "</div>" +
-            "</body>" +
-            "</html>";
+                "<html>" +
+                "<head>" +
+                "<meta charset=\"UTF-8\">" +
+                "<style>" +
+                "body { font-family: Arial, sans-serif; line-height: 1.6; }" +
+                ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                ".header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }" +
+                ".content { background: #f8f9fa; padding: 30px; }" +
+                ".button { display: inline-block; background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }" +
+                ".footer { text-align: center; color: #6c757d; font-size: 12px; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class=\"container\">" +
+                "<div class=\"header\">" +
+                "<h1>🏃‍♀️ ColorRun</h1>" +
+                "<p>Réinitialisation de mot de passe</p>" +
+                "</div>" +
+                "<div class=\"content\">" +
+                "<h2>Bonjour " + prenom + ",</h2>" +
+                "<p>Vous avez demandé la réinitialisation de votre mot de passe ColorRun.</p>" +
+                "<p>Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>" +
+                "<a href=\"" + resetUrl + "\" class=\"button\">Réinitialiser mon mot de passe</a>" +
+                "<p><strong>⏰ Ce lien expire dans 1 heure.</strong></p>" +
+                "<p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>" +
+                "</div>" +
+                "<div class=\"footer\">" +
+                "<p>L'équipe ColorRun</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
     }
-    
+
     /**
      * Simule l'envoi d'un email de vérification de compte
      */
@@ -84,10 +107,31 @@ public class EmailUtil {
             System.out.println("L'équipe ColorRun");
             System.out.println("---");
             System.out.println("✅ Email de vérification envoyé avec succès (SIMULATION)");
-            
+
             return true;
         } catch (Exception e) {
             System.err.println("❌ Erreur lors de l'envoi de l'email de vérification: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean sendWithSendGrid(Mail mail) throws IOException {
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
+        Request request = new Request();
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+
+        Response response = sg.api(request);
+        int statusCode = response.getStatusCode();
+
+        if (statusCode >= 200 && statusCode < 300) {
+            System.out.println("✅ Email envoyé avec succès à: " +
+                    mail.getPersonalization().get(0).getTos().get(0).getEmail());
+            return true;
+        } else {
+            System.err.println("❌ Échec de l'envoi de l'email. Code: " + statusCode);
+            System.err.println("Response Body: " + response.getBody());
             return false;
         }
     }
