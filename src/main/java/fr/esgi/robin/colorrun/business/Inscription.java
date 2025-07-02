@@ -5,28 +5,28 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "INSCRIPTIONS")
+@Table(name = "Inscriptions")
 public class Inscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_INSCRIPTION", nullable = false)
+    @Column(name = "id_inscription", nullable = false)
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_COURSE")
+    @JoinColumn(name = "id_course")
     private Courses course;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_UTILISATEUR")
+    @JoinColumn(name = "id_utilisateur")
     private Utilisateur utilisateur;
 
-    @Column(name = "DOSSARD", nullable = false, length = 50)
+    @Column(name = "dossard", nullable = false, length = 50)
     private String dossard;
 
-    @Column(name = "QR_CODE")
+    @Column(name = "qr_code")
     private String qrCode;
 
-    @Column(name = "DATE_INSCRIPTION")
+    @Column(name = "date_inscription")
     private Instant dateInscription;
 
     public Inscription() {

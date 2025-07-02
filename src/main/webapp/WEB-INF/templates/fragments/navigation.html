@@ -49,6 +49,11 @@
                         <i class="fas fa-user-check me-1"></i>Demandes Organisateur
                     </a>
                 </li>
+                <li class="nav-item" th:if="${session.utilisateur != null and session.utilisateur.roleString == 'admin'}">
+                    <a class="nav-link text-warning" th:href="@{/admin/demandes-contact}">
+                        <i class="fas fa-envelope me-1"></i>Demandes De Contact
+                    </a>
+                </li>
             </ul>
             
             <!-- AUTHENTIFICATION À DROITE -->

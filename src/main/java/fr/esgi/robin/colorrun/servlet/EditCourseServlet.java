@@ -6,23 +6,38 @@ import fr.esgi.robin.colorrun.repository.CoursesRepository;
 import fr.esgi.robin.colorrun.repository.impl.CoursesRepositoryImpl;
 import fr.esgi.robin.colorrun.util.TemplateUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @WebServlet(name = "editCourse", value = "/edit-course/*")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024, // 1 MB
+    maxFileSize = 1024 * 1024 * 5,   // 5 MB
+    maxRequestSize = 1024 * 1024 * 10 // 10 MB
+)
 public class EditCourseServlet extends HttpServlet {
     private final CoursesRepository coursesRepository = new CoursesRepositoryImpl();
+    private static final String UPLOAD_DIRECTORY = "course-images";
+    private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,9 +79,13 @@ public class EditCourseServlet extends HttpServlet {
                 dateTimeFormatted = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
             }
             
+            // Récupérer l'URL de l'image actuelle
+            String currentImageUrl = coursesRepository.getImagePathById(courseId);
+            
             Map<String, Object> data = new HashMap<>();
             data.put("course", course);
             data.put("dateTimeFormatted", dateTimeFormatted);
+            data.put("currentImageUrl", currentImageUrl);
             data.put("pageTitle", "Modifier " + course.getNomCourse() + " - ColorRun");
             
             TemplateUtil.processTemplate("edit-course", req, resp, data);
@@ -116,7 +135,6 @@ public class EditCourseServlet extends HttpServlet {
             String prixStr = req.getParameter("prix");
             String nbMaxParticipantsStr = req.getParameter("nbMaxParticipants");
             String causeSoutenue = req.getParameter("causeSoutenue");
-            String imageUrl = req.getParameter("imageUrl");
             
             // Validation basique
             if (nomCourse == null || nomCourse.trim().isEmpty() ||
@@ -142,6 +160,23 @@ public class EditCourseServlet extends HttpServlet {
                 LocalDateTime localDateTime = LocalDateTime.parse(dateHeureStr);
                 Instant dateHeure = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
                 
+                // Traitement de l'image
+                String newImageUrl = null;
+                Part imagePart = req.getPart("courseImage");
+                
+                if (imagePart != null && imagePart.getSize() > 0) {
+                    // Une nouvelle image a été uploadée
+                    newImageUrl = handleImageUpload(imagePart, req);
+                    if (newImageUrl == null) {
+                        session.setAttribute("errorMessage", "Erreur lors de l'upload de l'image. Vérifiez le format (JPG, PNG, GIF, WEBP) et la taille (max 5MB).");
+                        resp.sendRedirect(req.getRequestURI());
+                        return;
+                    }
+                } else {
+                    // Garder l'image actuelle
+                    newImageUrl = coursesRepository.getImagePathById(courseId);
+                }
+                
                 // Mettre à jour l'objet course
                 course.setNomCourse(nomCourse.trim());
                 course.setDescription(description.trim());
@@ -151,10 +186,16 @@ public class EditCourseServlet extends HttpServlet {
                 course.setPrix(prix);
                 course.setNbMaxParticipants(nbMaxParticipants);
                 course.setCauseSoutenue(causeSoutenue != null && !causeSoutenue.trim().isEmpty() ? causeSoutenue.trim() : null);
-                course.setImageUrl(imageUrl != null && !imageUrl.trim().isEmpty() ? imageUrl.trim() : null);
+                course.setImageUrl(newImageUrl);
                 
                 // Sauvegarder
                 coursesRepository.update(course);
+                
+                // Mettre à jour l'image en base si nécessaire
+                if (newImageUrl != null && imagePart != null && imagePart.getSize() > 0) {
+                    coursesRepository.uploadImageCourse(courseId, newImageUrl);
+                    System.out.println("Image de course mise à jour: " + newImageUrl);
+                }
                 
                 session.setAttribute("successMessage", "Course '" + course.getNomCourse() + "' modifiée avec succès !");
                 resp.sendRedirect(req.getContextPath() + "/course/" + courseId);
@@ -173,6 +214,65 @@ public class EditCourseServlet extends HttpServlet {
             session.setAttribute("errorMessage", "Erreur lors de la modification de la course");
             resp.sendRedirect(req.getRequestURI());
         }
+    }
+    
+    /**
+     * Gère l'upload d'image (copié depuis CreateCourseServlet)
+     */
+    private String handleImageUpload(Part imagePart, HttpServletRequest request) {
+        try {
+            String fileName = imagePart.getSubmittedFileName();
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return null;
+            }
+            
+            // Vérifier l'extension
+            String fileExtension = getFileExtension(fileName).toLowerCase();
+            if (!isAllowedExtension(fileExtension)) {
+                return null;
+            }
+            
+            // Créer le répertoire de destination s'il n'existe pas
+            String realPath = getServletContext().getRealPath("/");
+            Path uploadPath = Paths.get(realPath, "ressources", "images", UPLOAD_DIRECTORY);
+            
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            
+            // Générer un nom unique pour le fichier
+            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+            Path targetPath = uploadPath.resolve(uniqueFileName);
+            
+            // Sauvegarder le fichier
+            try (InputStream inputStream = imagePart.getInputStream()) {
+                Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            // Construire l'URL pour accéder à l'image
+            return request.getContextPath() + "/ressources/images/" + UPLOAD_DIRECTORY + "/" + uniqueFileName;
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'upload d'image: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < fileName.length() - 1) {
+            return fileName.substring(lastDotIndex);
+        }
+        return "";
+    }
+    
+    private boolean isAllowedExtension(String extension) {
+        for (String allowed : ALLOWED_EXTENSIONS) {
+            if (allowed.equals(extension)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

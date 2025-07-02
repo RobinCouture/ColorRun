@@ -100,7 +100,7 @@ public class CoursesServlet extends HttpServlet {
             data.put("pageTitle", "Courses ColorRun");
             data.put("courseImages", courseImages);
             
-            // Données pour les filtres
+            // Données pour les filtres - REMETTRE COMME AVANT
             data.put("villes", villes.stream().sorted().collect(Collectors.toList()));
             data.put("distances", distances.stream().sorted().collect(Collectors.toList()));
             data.put("selectedDate", req.getParameter("dateFilter"));
@@ -170,8 +170,7 @@ public class CoursesServlet extends HttpServlet {
         
         try {
             double filterDistance = Double.parseDouble(distanceFilter);
-            return course.getDistance() != null && 
-                   Math.abs(course.getDistance() - filterDistance) < 0.1; // Égalité avec tolérance
+            return course.getDistance() != null && course.getDistance() <= filterDistance;
         } catch (Exception e) {
             return true;
         }

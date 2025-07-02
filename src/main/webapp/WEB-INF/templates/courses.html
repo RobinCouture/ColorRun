@@ -47,27 +47,31 @@
         </div>
     </header>
 
-    <!-- Search and Filters (SANS LE PRIX) -->
+    <!-- Search and Filters -->
     <section class="search-section">
         <div class="container">
-            <form class="search-form">
+            <form class="search-form" method="GET" action="/ColorRun/courses">
                 <input type="text" 
                        class="filter-input" 
-                       id="searchInput" 
+                       name="search"
+                       th:value="${searchQuery}"
                        placeholder="Rechercher une course...">
                        
-                <select class="filter-input" id="locationFilter">
-                    <option value="">Toutes les villes</option>
-                </select>
+                <input type="text" 
+                       class="filter-input" 
+                       name="villeFilter"
+                       th:value="${selectedVille}"
+                       placeholder="Ville (ex: Lyon)">
                 
-                <select class="filter-input" id="distanceFilter">
-                    <option value="">Toutes les distances</option>
-                    <option value="5">5 km</option>
-                    <option value="10">10 km</option>
-                    <option value="15">15 km et plus</option>
-                </select>
+                <input type="number" 
+                       class="filter-input" 
+                       name="distanceFilter"
+                       th:value="${selectedDistance}"
+                       placeholder="Distance max (km)"
+                       min="1" 
+                       step="0.1">
                 
-                <button type="button" class="search-btn" onclick="applyFilters()">
+                <button type="submit" class="search-btn">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
@@ -180,12 +184,12 @@
                 <div th:if="${totalPages > 1}" class="pagination-section">
                     <nav aria-label="Navigation des pages">
                         <ul class="pagination">
-                            <!-- Pages numériques -->
+                            <!-- Pages numériques avec filtres préservés -->
                             <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}" 
                                 class="page-item" 
                                 th:classappend="${pageNum == currentPage ? 'active' : ''}">
                                 <a class="page-link" 
-                                   th:href="'?page=' + ${pageNum}"
+                                   th:href="@{/courses(page=${pageNum}, search=${param.search}, villeFilter=${param.villeFilter}, distanceFilter=${param.distanceFilter}, dateFilter=${param.dateFilter})}"
                                    th:text="${pageNum}">1</a>
                             </li>
                         </ul>

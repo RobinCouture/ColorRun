@@ -192,8 +192,16 @@
                             </div>
                             
                             <div th:if="${session.utilisateur != null}">
-                                <!-- Si les inscriptions sont ouvertes (utiliser une variable du servlet) -->
-                                <div th:if="${inscriptionsOuvertes}">
+                                <!-- Si l'utilisateur est déjà inscrit -->
+                                <div th:if="${dejaInscrit}">
+                                    <button class="register-btn registered" disabled>
+                                        <i class="fas fa-check-circle"></i>
+                                        Vous êtes déjà inscrit
+                                    </button>
+                                </div>
+                                
+                                <!-- Si les inscriptions sont ouvertes et l'utilisateur n'est pas inscrit -->
+                                <div th:if="${inscriptionsOuvertes and !dejaInscrit}">
                                     <form method="post" th:action="@{/inscription/{courseId}(courseId=${course.id})}"
                                           onsubmit="return confirm('Confirmer votre inscription à cette course ?')">
                                         <button type="submit" class="register-btn">
@@ -203,8 +211,8 @@
                                     </form>
                                 </div>
                                 
-                                <!-- Si les inscriptions sont fermées -->
-                                <div th:unless="${inscriptionsOuvertes}">
+                                <!-- Si les inscriptions sont fermées et l'utilisateur n'est pas inscrit -->
+                                <div th:if="${!inscriptionsOuvertes and !dejaInscrit}">
                                     <button class="register-btn disabled" disabled>
                                         <i class="fas fa-calendar-times"></i>
                                         Inscriptions fermées

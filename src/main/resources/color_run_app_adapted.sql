@@ -58,6 +58,19 @@ CREATE TABLE IF NOT EXISTS DemandesOrganisateur (
     FOREIGN KEY (id_utilisateur) REFERENCES Utilisateurs(id_utilisateur) ON DELETE CASCADE
 );
 
+-- Table : Demande de Contact
+CREATE TABLE IF NOT EXISTS demandes_contact (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    sujet VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    date_creation TIMESTAMP NOT NULL,
+    traite BOOLEAN DEFAULT FALSE,
+    reponse TEXT,
+    date_traitement TIMESTAMP NULL
+);
+
 -- Table : Pages Statiques
 CREATE TABLE IF NOT EXISTS PagesStatiques (
     id_page INT AUTO_INCREMENT PRIMARY KEY,

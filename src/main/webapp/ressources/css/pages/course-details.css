@@ -594,3 +594,13 @@ body {
         padding: 1.5rem;
     }
 }
+
+.register-btn.registered {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    cursor: default;
+}
+
+.register-btn.registered:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}

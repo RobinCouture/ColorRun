@@ -113,6 +113,74 @@
                     </button>
                 </div>
             </form>
+            
+            <!-- Section Historique des courses -->
+            <div class="courses-history-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-history me-2"></i>
+                        Historique des courses
+                    </h3>
+                </div>
+                
+                <div th:if="${inscriptions != null and !inscriptions.isEmpty()}" class="courses-list">
+                    <div th:each="inscription : ${inscriptions}" class="course-item">
+                        <div class="course-info">
+                            <div class="course-main-info">
+                                <h4 class="course-name" th:text="${inscription.course.nomCourse}">Nom de la course</h4>
+                                <div class="course-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span th:text="${inscription.course.lieu}">Lieu</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-road"></i>
+                                        <span th:text="${inscription.course.distance + ' km'}">Distance</span>
+                                    </div>
+                                </div>
+                                <p class="course-description" th:text="${inscription.course.description}">Description de la course</p>
+                                <div class="dossard-info">
+                                    <span class="dossard-label">Numéro de dossard :</span>
+                                    <span class="dossard-number" th:text="${inscription.dossard}">ABC-123</span>
+                                </div>
+                            </div>
+                            
+                            <div class="course-actions">
+                                <!-- Bouton de téléchargement toujours disponible -->
+                                <div class="download-section">
+                                    <a th:href="@{'/download-dossard/' + ${inscription.id}}" 
+                                       class="btn btn-download" 
+                                       target="_blank"
+                                       title="Télécharger votre dossard PDF">
+                                        <i class="fas fa-download me-2"></i>
+                                        Télécharger dossard
+                                    </a>
+                                    <small class="download-hint">Format PDF avec QR code</small>
+                                </div>
+                                
+                                <!-- Badge de statut simple - SANS ERREUR -->
+                                <div class="status-badge">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Inscription active
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Message si aucune inscription -->
+                <div th:if="${inscriptions == null or inscriptions.isEmpty()}" class="no-courses">
+                    <div class="no-courses-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <h4>Aucune inscription</h4>
+                    <p>Vous n'êtes inscrit à aucune course pour le moment.</p>
+                    <a th:href="@{/courses}" class="btn btn-explore">
+                        <i class="fas fa-search me-2"></i>
+                        Découvrir les courses
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

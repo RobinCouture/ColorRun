@@ -5,8 +5,10 @@ import fr.esgi.robin.colorrun.business.FilsDiscussion;
 import fr.esgi.robin.colorrun.business.Utilisateur;
 import fr.esgi.robin.colorrun.repository.CoursesRepository;
 import fr.esgi.robin.colorrun.repository.FilsDiscussionRepository;
+import fr.esgi.robin.colorrun.repository.InscriptionRepository;
 import fr.esgi.robin.colorrun.repository.impl.CoursesRepositoryImpl;
 import fr.esgi.robin.colorrun.repository.impl.FilsDiscussionRepositoryImpl;
+import fr.esgi.robin.colorrun.repository.impl.InscriptionRepositoryImpl;
 import fr.esgi.robin.colorrun.util.TemplateUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class CourseDetailsServlet extends HttpServlet {
     private final CoursesRepository coursesRepository = new CoursesRepositoryImpl();
     private final FilsDiscussionRepository filsDiscussionRepository = new FilsDiscussionRepositoryImpl();
+    private final InscriptionRepository inscriptionRepository = new InscriptionRepositoryImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -228,6 +231,11 @@ public class CourseDetailsServlet extends HttpServlet {
 
             // Vérifier si l'utilisateur est déjà inscrit
             boolean dejaInscrit = false;
+            if (utilisateurConnecte != null) {
+                InscriptionRepositoryImpl impl = (InscriptionRepositoryImpl) inscriptionRepository;
+                dejaInscrit = impl.existsByUserAndCourse(utilisateurConnecte.getId(), courseId);
+                System.out.println("🔍 Utilisateur déjà inscrit: " + dejaInscrit);
+            }
     
             // Préparer les données pour le template
             Map<String, Object> data = new HashMap<>();
