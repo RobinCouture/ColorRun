@@ -135,4 +135,45 @@ public class EmailUtil {
             return false;
         }
     }
+
+    public static boolean sendContactResponseEmail(String email, String prenom, String reponse) {
+        try {
+            Email from = new Email(EMAIL_FROM, FROM_NAME);
+            Email to = new Email(email);
+            String subject = "Réponse à votre demande de contact ColorRun";
+            String contentHtml = "<p>Bonjour " + prenom + ",</p>"
+                + "<p>Votre demande a été traitée. Voici la réponse de l'équipe ColorRun :</p>"
+                + "<blockquote style='background:#f8f9fa;padding:10px;border-left:4px solid #007bff;'>" + reponse + "</blockquote>"
+                + "<p>Sportivement,<br>L'équipe ColorRun</p>";
+
+            Content content = new Content("text/html", contentHtml);
+            Mail mail = new Mail(from, subject, to, content);
+
+            return sendWithSendGrid(mail);
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'envoi de l'email de réponse contact: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean sendContactConfirmationEmail(String email, String prenom) {
+        try {
+            Email from = new Email(EMAIL_FROM, FROM_NAME);
+            Email to = new Email(email);
+            String subject = "Votre demande de contact ColorRun a été prise en compte";
+            String contentHtml = "<p>Bonjour " + prenom + ",</p>"
+                + "<p>Votre demande a bien été prise en compte par l'équipe ColorRun. Nous vous répondrons dans les plus brefs délais.</p>"
+                + "<p>Sportivement,<br>L'équipe ColorRun</p>";
+
+            Content content = new Content("text/html", contentHtml);
+            Mail mail = new Mail(from, subject, to, content);
+
+            return sendWithSendGrid(mail);
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'envoi de l'email de confirmation contact: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

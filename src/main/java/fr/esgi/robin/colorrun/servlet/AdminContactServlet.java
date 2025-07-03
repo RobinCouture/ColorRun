@@ -4,6 +4,7 @@ import fr.esgi.robin.colorrun.business.DemandeContact;
 import fr.esgi.robin.colorrun.business.Utilisateur;
 import fr.esgi.robin.colorrun.repository.DemandeContactRepository;
 import fr.esgi.robin.colorrun.repository.impl.DemandeContactRepositoryImpl;
+import fr.esgi.robin.colorrun.util.EmailUtil;
 import fr.esgi.robin.colorrun.util.TemplateUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -79,8 +80,22 @@ public class AdminContactServlet extends HttpServlet {
             
             if ("marquer_traite".equals(action)) {
                 String reponse = request.getParameter("reponse");
+                DemandeContact demande = demandeContactRepository.findById(demandeId);
                 demandeContactRepository.updateStatut(demandeId, true, reponse);
                 System.out.println("✅ Demande " + demandeId + " marquée comme traitée");
+                
+                if (reponse != null && !reponse.trim().isEmpty()) {
+                    EmailUtil.sendContactResponseEmail(
+                        demande.getEmail(),
+                        demande.getNom(),
+                        reponse
+                    );
+                } else {
+                    EmailUtil.sendContactConfirmationEmail(
+                        demande.getEmail(),
+                        demande.getNom()
+                    );
+                }
             } else if ("marquer_non_traite".equals(action)) {
                 demandeContactRepository.updateStatut(demandeId, false, null);
                 System.out.println("🔄 Demande " + demandeId + " marquée comme non traitée");
