@@ -269,4 +269,15 @@ public class UtilisateurRepositoryImpl implements UtilisateurRepository {
             e.printStackTrace();
         }
     }
+
+    public void deleteById(int userId) {
+        String sql = "DELETE FROM UTILISATEURS WHERE ID_UTILISATEUR = ?";  // ✅ Utiliser ID_UTILISATEUR au lieu de ID
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression de l'utilisateur", e);
+        }
+    }
 }

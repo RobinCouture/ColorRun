@@ -20,4 +20,8 @@ public interface UtilisateurRepository {
     // Méthodes pour la pagination
     public List<Utilisateur> findAllPaginated(int offset, int limit);
     public int countAll();
+
+    // Supprimer un utilisateur par son ID
+    public void deleteById(int userId);
+
 }

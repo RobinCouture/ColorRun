@@ -177,6 +177,12 @@ public class AdminRoleServlet extends HttpServlet {
                 e.printStackTrace();
                 session.setAttribute("errorMessage", "Erreur lors de la mise à jour du rôle: " + e.getMessage());
             }
+        } else if ("deleteUser".equals(action)) {
+            int userId = Integer.parseInt(req.getParameter("userId"));
+            utilisateurRepository.deleteById(userId);
+            req.getSession().setAttribute("successMessage", "Utilisateur supprimé avec succès !");
+            resp.sendRedirect(req.getContextPath() + "/admin/roles");
+            return;
         } else {
             System.out.println("❌ Action inconnue: " + action);
             session.setAttribute("errorMessage", "Action non reconnue");

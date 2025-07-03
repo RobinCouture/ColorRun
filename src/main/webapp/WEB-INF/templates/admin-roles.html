@@ -55,7 +55,8 @@
                                         <th><i class="fas fa-user me-2"></i>Nom Complet</th>
                                         <th><i class="fas fa-calendar me-2"></i>Date d'inscription</th>
                                         <th><i class="fas fa-shield-alt me-2"></i>Rôle Actuel</th>
-                                        <th><i class="fas fa-cogs me-2"></i>Modifier Rôle</th>
+                                        <th class="text-nowrap"><i class="fas fa-cogs me-2"></i>Modifier Rôle</th>
+                                        <th class="text-nowrap"><i class="fas fa-trash me-2"></i>Supprimer</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -68,18 +69,28 @@
                                             <span th:if="${utilisateur.roleString == 'participant'}" class="user-badge">PARTICIPANT</span>
                                             <span th:if="${utilisateur.roleString == 'organisateur'}" class="organisateur-badge">ORGANISATEUR</span>
                                         </td>
-                                        <td>
-                                            <form method="post" style="display: inline-flex; align-items: center; gap: 10px;">
+                                        <td class="text-nowrap">
+                                            <form method="post" class="d-flex align-items-center gap-2 mb-0">
                                                 <input type="hidden" name="action" value="updateRole">
                                                 <input type="hidden" name="userId" th:value="${utilisateur.id}">
                                                 <input type="hidden" name="currentPage" th:value="${currentPage}">
-                                                <select name="role" class="role-select">
+                                                <select name="role" class="role-select form-select form-select-sm w-auto">
                                                     <option value="participant" th:selected="${utilisateur.roleString == 'participant'}">PARTICIPANT</option>
                                                     <option value="organisateur" th:selected="${utilisateur.roleString == 'organisateur'}">ORGANISATEUR</option>
                                                     <option value="admin" th:selected="${utilisateur.roleString == 'admin'}">ADMIN</option>
                                                 </select>
-                                                <button type="submit" class="btn btn-update">
+                                                <button type="submit" class="btn btn-success btn-sm">
                                                     <i class="fas fa-save me-1"></i>Modifier
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <form method="post" onsubmit="return confirm('Supprimer cet utilisateur ? Cette action est irréversible !');" class="d-inline">
+                                                <input type="hidden" name="action" value="deleteUser">
+                                                <input type="hidden" name="userId" th:value="${utilisateur.id}">
+                                                <input type="hidden" name="currentPage" th:value="${currentPage}">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Supprimer
                                                 </button>
                                             </form>
                                         </td>

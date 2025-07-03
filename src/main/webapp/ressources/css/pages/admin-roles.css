@@ -111,6 +111,7 @@ body {
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0,0,0,0.1);
     margin-bottom: 3rem;
+    overflow-x: auto;
 }
 
 .role-table {
@@ -570,6 +571,17 @@ body {
     .role-table tbody td:nth-child(3) {
         display: none;
     }
+    
+    .btn-success.btn-sm, .btn-danger.btn-sm {
+        font-size: 0.95rem;
+        padding: 0.35em 0.7em;
+    }
+    
+    .role-select {
+        min-width: 100px;
+        font-size: 0.9rem;
+        padding: 0.2em 0.5em;
+    }
 }
 
 /* ================================
@@ -609,4 +621,67 @@ body {
 
 .role-table tbody tr:hover::before {
     width: 5px;
+}
+
+/* Table responsive et alignement vertical */
+.role-table th, .role-table td {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Espacement horizontal entre les éléments d'action */
+.d-flex.gap-2 > * {
+    margin-right: 0.5rem;
+}
+.d-flex.gap-2 > *:last-child {
+    margin-right: 0;
+}
+
+/* Badges de rôle */
+.admin-badge {
+    background: #dc3545;
+    color: #fff;
+    padding: 0.4em 1em;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+.user-badge {
+    background: #0d6efd;
+    color: #fff;
+    padding: 0.4em 1em;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+.organisateur-badge {
+    background: #fd7e14;
+    color: #fff;
+    padding: 0.4em 1em;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+/* Boutons Modifier et Supprimer */
+.btn-success.btn-sm, .btn-danger.btn-sm {
+    font-size: 0.95rem;
+    padding: 0.35em 1em;
+    border-radius: 20px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+/* Sélecteur de rôle compact */
+.role-select {
+    min-width: 130px;
+    font-size: 0.95rem;
+    border-radius: 20px;
+    padding: 0.25em 0.8em;
+    margin-right: 0.5em;
 }
